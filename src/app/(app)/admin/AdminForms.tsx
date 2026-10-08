@@ -1,7 +1,7 @@
 'use client'
 
 import { useActionState, useState } from 'react'
-import { resetPassword, saveTopic } from '@/lib/actions/admin'
+import { resetPassword, saveDriveUrl, saveTopic } from '@/lib/actions/admin'
 import { initialFormState } from '@/lib/actions/state'
 import { SubmitButton } from '@/components/SubmitButton'
 import { Field, Notice, buttonStyles, inputStyles } from '@/components/ui'
@@ -41,8 +41,6 @@ export function ResetPasswordButton({ usuario }: { usuario: string }) {
 
 export interface TopicFormValues {
   id?: string
-  /** Si la sesión sale de una propuesta de un miembro. */
-  propuesta?: string
   titulo: string
   cita: string
   introduccion: string
@@ -61,7 +59,6 @@ export function TopicForm({ initial }: { initial: TopicFormValues }) {
   return (
     <form action={action} className="flex flex-col gap-5">
       {initial.id ? <input type="hidden" name="id" value={initial.id} /> : null}
-      {initial.propuesta ? <input type="hidden" name="propuesta" value={initial.propuesta} /> : null}
       <Field label="Título" htmlFor="t-titulo" hint="Corto y con gancho. Ej.: PODER: ¿QUIÉN MANDA REALMENTE?">
         <input id="t-titulo" name="titulo" required maxLength={140} defaultValue={initial.titulo} className={`${inputStyles} font-display font-bold`} />
       </Field>
@@ -88,7 +85,7 @@ export function TopicForm({ initial }: { initial: TopicFormValues }) {
       <Field label="Frase para confirmar" htmlFor="t-llamada" hint="Va encima de los botones Voy / No puedo.">
         <input id="t-llamada" name="llamada" maxLength={120} defaultValue={initial.llamada} className={inputStyles} placeholder="¿Contamos contigo?" />
       </Field>
-      <Field label="Enlace al podcast (opcional)" htmlFor="t-materiales" hint="Si lo dejas vacío, se usa el enlace general de CONFIG (drive_url).">
+      <Field label="Enlace al podcast (opcional)" htmlFor="t-materiales" hint="Si lo dejas vacío, se usa el Drive general (abajo del todo en Admin).">
         <input id="t-materiales" name="materiales_url" type="url" defaultValue={initial.materiales_url} className={inputStyles} placeholder="https://drive.google.com/…" />
       </Field>
       <label className="flex items-center gap-3 rounded-2xl bg-mist p-4 font-semibold">
@@ -100,6 +97,23 @@ export function TopicForm({ initial }: { initial: TopicFormValues }) {
       <a href={initial.id ? `/sesiones/${encodeURIComponent(initial.id)}` : '/admin'} className={buttonStyles.ghost}>
         Cancelar
       </a>
+    </form>
+  )
+}
+
+/** Enlace general al Drive: es el que se abre con «Escucha el podcast» si la sesión no tiene uno propio. */
+export function DriveUrlForm({ current }: { current: string }) {
+  const [state, action] = useActionState(saveDriveUrl, initialFormState)
+  return (
+    <form action={action} className="flex flex-col gap-3">
+      <Field label="Enlace a la carpeta de Drive" htmlFor="drive-url" hint="Es el enlace de «Escucha el podcast» en Inicio y en cada sesión (salvo que la sesión tenga uno propio).">
+        <input id="drive-url" name="drive_url" type="url" inputMode="url" defaultValue={current} placeholder="https://drive.google.com/drive/folders/…" className={inputStyles} />
+      </Field>
+      {state.error ? <Notice kind="error">{state.error}</Notice> : null}
+      {state.ok ? <Notice kind="ok">{state.ok}</Notice> : null}
+      <SubmitButton variant="secondary" pendingText="Guardando…">
+        Guardar enlace
+      </SubmitButton>
     </form>
   )
 }

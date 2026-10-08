@@ -17,7 +17,6 @@ export default async function NewTopicPage({ searchParams }: { searchParams: Pro
       <PageTitle eyebrow="Admin" title="Nueva sesión" />
       <TopicForm
         initial={{
-          propuesta: proposal?.id,
           titulo: proposal?.titulo.toUpperCase() ?? '',
           cita: '',
           introduccion: proposal?.descripcion ?? '',

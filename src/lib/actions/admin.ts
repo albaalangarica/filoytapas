@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { updateTag } from 'next/cache'
 import { readFresh } from '@/lib/data'
 import { getStore, SHEETS_CACHE_TAG } from '@/lib/store'
-import { buildRow } from '@/lib/store/types'
+import { buildRow, cell } from '@/lib/store/types'
 import { hashPassword, provisionalPassword } from '@/lib/auth/password'
 import { requireAdmin } from '@/lib/auth/session'
 import { newTopicId } from '@/lib/domain/model'
@@ -55,12 +55,6 @@ export async function saveTopic(_prev: FormState, formData: FormData): Promise<F
   } else {
     id = newTopicId(t.fecha, data.topics.map((x) => x.id))
     await getStore().append('TEMAS', buildRow(workbook.TEMAS, { id, ...values, autor: me.nombre }))
-  }
-  // Si la sesión sale de una propuesta, la marcamos como usada.
-  const fromProposal = data.proposals.find((x) => x.id === String(formData.get('propuesta') ?? ''))
-  if (fromProposal) {
-    const row = workbook.PROPUESTAS.rows.find((r) => r.rowNumber === fromProposal.rowNumber)
-    await getStore().update('PROPUESTAS', fromProposal.rowNumber, buildRow(workbook.PROPUESTAS, { estado: 'usada' }, row?.values))
   }
   updateTag(SHEETS_CACHE_TAG)
   redirect(`/sesiones/${encodeURIComponent(id)}`)
@@ -183,4 +177,23 @@ export async function setProposalState(formData: FormData): Promise<void> {
   const row = workbook.PROPUESTAS.rows.find((r) => r.rowNumber === proposal.rowNumber)
   await getStore().update('PROPUESTAS', proposal.rowNumber, buildRow(workbook.PROPUESTAS, { estado }, row?.values))
   updateTag(SHEETS_CACHE_TAG)
+}
+
+/** Guarda el enlace general al Drive (podcast y materiales) en CONFIG → drive_url. */
+export async function saveDriveUrl(_prev: FormState, formData: FormData): Promise<FormState> {
+  await requireAdmin()
+  const url = String(formData.get('drive_url') ?? '').trim()
+  if (url && !(/^https?:\/\//i.test(url) && URL.canParse(url))) {
+    return { error: 'Pega el enlace completo de Drive, empezando por https://' }
+  }
+  const { workbook } = await readFresh()
+  const table = workbook.CONFIG
+  const row = table.rows.find((r) => cell(table, r, 'clave').toLowerCase() === 'drive_url')
+  if (row) {
+    await getStore().update('CONFIG', row.rowNumber, buildRow(table, { valor: url }, row.values))
+  } else {
+    await getStore().append('CONFIG', buildRow(table, { clave: 'drive_url', valor: url, 'para qué sirve': 'Enlace general al podcast (carpeta de Drive)' }))
+  }
+  updateTag(SHEETS_CACHE_TAG)
+  return { ok: url ? 'Enlace guardado. Ya sale en Inicio y en cada sesión.' : 'Enlace quitado.' }
 }

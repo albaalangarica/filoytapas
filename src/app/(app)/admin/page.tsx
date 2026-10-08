@@ -10,7 +10,7 @@ import { getAppData } from '@/lib/data'
 import { dayAndMonth, todayInMadrid } from '@/lib/domain/dates'
 import type { User } from '@/lib/domain/model'
 import { formatEuros } from '@/lib/domain/money'
-import { ResetPasswordButton } from './AdminForms'
+import { DriveUrlForm, ResetPasswordButton } from './AdminForms'
 
 export const metadata: Metadata = { title: 'Admin' }
 
@@ -141,6 +141,12 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
           </ul>
         ) : null}
       </div>
+
+      <section className="mt-12 rounded-card border border-line bg-white p-5">
+        <h2 className="mb-1 flex items-center gap-2 font-display text-xl font-extrabold text-navy">🎧 Drive del podcast</h2>
+        <p className="mb-4 text-sm text-muted">La carpeta donde se suben el podcast y los materiales.</p>
+        <DriveUrlForm current={data.config.driveUrl} />
+      </section>
     </>
   )
 }
@@ -258,11 +264,9 @@ function Proposals({ data }: { data: Awaited<ReturnType<typeof getAppData>> }) {
           </div>
           {p.descripcion ? <p className="mt-2 whitespace-pre-line text-sm leading-relaxed">{p.descripcion}</p> : null}
           <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-line pt-3 text-sm font-semibold">
-            {p.estado !== 'usada' ? (
-              <Link href={`/admin/temas/nuevo?propuesta=${encodeURIComponent(p.id)}`} className="text-mandarin-700">
-                Crear sesión con este tema →
-              </Link>
-            ) : null}
+            <Link href={`/admin/temas/nuevo?propuesta=${encodeURIComponent(p.id)}`} className="text-mandarin-700">
+              Crear sesión con este tema →
+            </Link>
             <form action={setProposalState}>
               <input type="hidden" name="id" value={p.id} />
               <input type="hidden" name="estado" value={p.estado === 'nueva' ? 'archivada' : 'nueva'} />
