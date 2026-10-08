@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { longDate, nextThursday, normalizeDate, relativeLabel, todayInMadrid } from '@/lib/domain/dates'
+import { longDate, nextThursday, normalizeDate, normalizeTime, relativeLabel, todayInMadrid } from '@/lib/domain/dates'
 
 describe('fechas', () => {
   it('acepta AAAA-MM-DD y D/M/AAAA', () => {
@@ -7,6 +7,17 @@ describe('fechas', () => {
     expect(normalizeDate('8/10/2026')).toBe('2026-10-08')
     expect(normalizeDate('31/02/2026')).toBeNull()
     expect(normalizeDate('mañana')).toBeNull()
+    expect(normalizeDate('46296')).toBe('2026-10-01')
+  })
+
+  it('normaliza horas, también la fracción de día de Sheets', () => {
+    expect(normalizeTime('21:00')).toBe('21:00')
+    expect(normalizeTime('9:30')).toBe('09:30')
+    expect(normalizeTime('21:00:00')).toBe('21:00')
+    expect(normalizeTime('21h')).toBe('21:00')
+    expect(normalizeTime('0,875')).toBe('21:00')
+    expect(normalizeTime('0.5')).toBe('12:00')
+    expect(normalizeTime('25:00')).toBeNull()
   })
 
   it('calcula hoy en hora de Madrid', () => {

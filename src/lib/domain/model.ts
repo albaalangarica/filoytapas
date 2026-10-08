@@ -1,5 +1,5 @@
 import { cell, type SheetRow, type SheetTable, type Workbook } from '@/lib/store/types'
-import { normalizeDate } from './dates'
+import { normalizeDate, normalizeTime } from './dates'
 
 /* Tipos de dominio y lectura de las pestañas del Sheet. Funciones puras: fáciles de testear. */
 
@@ -60,6 +60,11 @@ export interface AppConfig {
   ciudad: string
 }
 
+/** Un id de tema que Sheets ha convertido en número de serie de fecha vuelve a ser AAAA-MM-DD. */
+function topicId(value: string): string {
+  return /^\d{5}$/.test(value) ? (normalizeDate(value) ?? value) : value
+}
+
 const YES = new Set(['sí', 'si', 'true', 'verdadero', '1', 'x', 'yes'])
 
 function rows<T>(table: SheetTable, map: (get: (column: string) => string, row: SheetRow) => T | null): T[] {
@@ -83,12 +88,12 @@ export function safeUrl(value: string): string {
 export function parseTopics(table: SheetTable): Topic[] {
   return rows(table, (get, row) => {
     const fecha = normalizeDate(get('fecha'))
-    const id = get('id') || fecha
+    const id = topicId(get('id')) || fecha
     if (!id || !fecha || !get('titulo')) return null
     return {
       id,
       fecha,
-      hora: get('hora') || '21:00',
+      hora: normalizeTime(get('hora')) ?? '21:00',
       lugar: get('lugar'),
       titulo: get('titulo'),
       cita: get('cita').replace(/^["“«]+|["”»]+$/g, ''),
@@ -134,7 +139,7 @@ export function parseAttendance(table: SheetTable): Attendance[] {
   return rows(table, (get, row) => {
     const respuesta = get('respuesta').toLowerCase()
     if (respuesta !== 'voy' && respuesta !== 'no') return null
-    const temaId = get('tema_id')
+    const temaId = topicId(get('tema_id'))
     const usuario = normalizeUsername(get('usuario'))
     if (!temaId || !usuario) return null
     return { temaId, usuario, respuesta, actualizado: get('actualizado'), rowNumber: row.rowNumber }
@@ -147,7 +152,7 @@ export function parseReflections(table: SheetTable): Reflection[] {
     if (!get('id') || !get('tema_id') || !url) return null
     return {
       id: get('id'),
-      temaId: get('tema_id'),
+      temaId: topicId(get('tema_id')),
       usuario: normalizeUsername(get('usuario')),
       titulo: get('titulo') || url,
       url,
@@ -163,7 +168,7 @@ export function parseConfig(table: SheetTable): AppConfig {
   return {
     driveUrl: safeUrl(map.get('drive_url') ?? ''),
     lugarDefecto: map.get('lugar_defecto') || 'Bar Trinidad',
-    horaDefecto: map.get('hora_defecto') || '21:00',
+    horaDefecto: normalizeTime(map.get('hora_defecto') ?? '') ?? '21:00',
     mapsUrl: safeUrl(map.get('maps_url') ?? ''),
     ciudad: map.get('ciudad') ?? '',
   }

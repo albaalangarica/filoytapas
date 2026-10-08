@@ -7,13 +7,15 @@ const temas = toTable([
   ['2026-10-01', '1/10/2026', '21:00', 'Bar Trinidad', 'CRISIS DE VIVIENDA', '“Maricarmen no se va.”', 'Intro', '¿Uno?\n\n ¿Dos? ', '', 'javascript:alert(1)', 'Martina', 'sí'],
   [],
   ['2026-10-08', '2026-10-08', '21:00', 'Bar Trinidad', 'PODER', '', '', '', '', 'https://drive.google.com/x', 'Juanma', 'TRUE'],
-  ['borrador', '2026-10-15', '21:00', 'Bar Trinidad', 'BORRADOR', '', '', '', '', '', 'Juanma', 'no'],
+  ['46310', '46310', '0,875', 'Bar Trinidad', 'SERIAL', '', '', '', '', '', 'Juanma', 'no'],
+  ['borrador', '2026-10-16', '21:00', 'Bar Trinidad', 'BORRADOR', '', '', '', '', '', 'Juanma', 'no'],
 ])
 
 describe('lectura del Sheet', () => {
   it('lee temas, normaliza fechas, quita comillas y descarta enlaces peligrosos', () => {
     const topics = parseTopics(temas)
-    expect(topics.map((t) => t.id)).toEqual(['borrador', '2026-10-08', '2026-10-01'])
+    expect(topics.map((t) => t.id)).toEqual(['borrador', '2026-10-15', '2026-10-08', '2026-10-01'])
+    expect(topics.find((t) => t.titulo === 'SERIAL')).toMatchObject({ id: '2026-10-15', fecha: '2026-10-15', hora: '21:00' })
     const vivienda = topics.find((t) => t.id === '2026-10-01')!
     expect(vivienda.fecha).toBe('2026-10-01')
     expect(vivienda.cita).toBe('Maricarmen no se va.')

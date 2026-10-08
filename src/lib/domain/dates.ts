@@ -7,13 +7,37 @@ export function todayInMadrid(now: Date = new Date()): string {
   return new Intl.DateTimeFormat('en-CA', { timeZone: TIME_ZONE, year: 'numeric', month: '2-digit', day: '2-digit' }).format(now)
 }
 
-/** Acepta AAAA-MM-DD o D/M/AAAA (lo que pone Sheets si alguien escribe la fecha a mano). */
+/**
+ * Acepta AAAA-MM-DD, D/M/AAAA o el número de serie de Sheets (46296 = 1/10/2026),
+ * que es lo que aparece si alguien escribe la fecha a mano y Sheets la convierte.
+ */
 export function normalizeDate(value: string): string | null {
   const v = value.trim()
+  if (/^\d{5}$/.test(v)) {
+    const d = new Date(Date.UTC(1899, 11, 30) + Number(v) * 86_400_000)
+    return d.toISOString().slice(0, 10)
+  }
   let m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(v)
   if (m) return iso(Number(m[1]), Number(m[2]), Number(m[3]))
   m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(v)
   if (m) return iso(Number(m[3]), Number(m[2]), Number(m[1]))
+  return null
+}
+
+/** Acepta 21:00, 21:00:00, 21h o la fracción de día de Sheets (0,875 = 21:00). */
+export function normalizeTime(value: string): string | null {
+  const v = value.trim().toLowerCase()
+  let m = /^(\d{1,2})(?::(\d{2}))?(?::\d{2})?\s*h?$/.exec(v)
+  if (m) {
+    const h = Number(m[1])
+    const min = Number(m[2] ?? 0)
+    return h < 24 && min < 60 ? `${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}` : null
+  }
+  m = /^0?[.,](\d+)$/.exec(v)
+  if (m) {
+    const total = Math.round(Number(`0.${m[1]}`) * 24 * 60)
+    return `${String(Math.floor(total / 60) % 24).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`
+  }
   return null
 }
 
