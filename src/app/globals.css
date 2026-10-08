@@ -1,0 +1,75 @@
+@import 'tailwindcss';
+
+/*
+ * Filo y Tapas · paleta "Pop filosófico": blanco de base, cobalto para la estructura
+ * y mandarina para lo que se pulsa. Sin fondos negros.
+ */
+@theme {
+  --font-sans: 'Figtree Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Bricolage Grotesque Variable', 'Figtree Variable', ui-sans-serif, system-ui, sans-serif;
+
+  --color-paper: #ffffff;
+  --color-mist: #f3f5fd;
+  --color-ink: #16204a;
+  --color-muted: #5d6688;
+  --color-line: #dfe3f3;
+  --color-cobalt: #1e47e0;
+  --color-cobalt-700: #1736b8;
+  --color-cobalt-50: #e8edfd;
+  --color-cobalt-100: #d4ddfb;
+  --color-mandarin: #ff7a1a;
+  --color-mandarin-700: #c45200;
+  --color-mandarin-50: #fff1e6;
+  --color-ok: #11845b;
+  --color-ok-50: #e3f5ec;
+  --color-danger: #c22a3a;
+  --color-danger-50: #fdecee;
+
+  --radius-card: 1.25rem;
+
+  --animate-rise: rise 380ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-pop: pop 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes pop {
+    0% { transform: scale(0.9); }
+    60% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    text-size-adjust: 100%;
+  }
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-mandarin);
+    outline-offset: 2px;
+    border-radius: 0.5rem;
+  }
+  ::selection {
+    background: var(--color-mandarin);
+    color: white;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
