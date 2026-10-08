@@ -57,7 +57,15 @@ export function configProblems(): string[] {
   if (!email) problems.push('Falta GOOGLE_SERVICE_ACCOUNT_EMAIL.')
   else if (!email.endsWith('.iam.gserviceaccount.com')) problems.push('GOOGLE_SERVICE_ACCOUNT_EMAIL no parece el email de una cuenta de servicio.')
   const key = privateKey()
-  if (!key) problems.push('Falta GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY.')
+  if (!key) {
+    // Solo nombres y si están vacías, nunca valores: ayuda a ver erratas en el nombre o un valor que no se guardó.
+    const seen = Object.keys(process.env)
+      .filter((name) => name.startsWith('GOOGLE_'))
+      .map((name) => `${name}${(process.env[name] ?? '').trim() ? '' : ' (vacía)'}`)
+    problems.push(
+      `Falta GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY. La app ve estas variables de Google: ${seen.length ? seen.join(', ') : 'ninguna'}.`,
+    )
+  }
   else if ((process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY ?? '').trim().startsWith('{') && !serviceAccountJson()) {
     problems.push('GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY parece el archivo JSON, pero está incompleto: ábrelo, selecciona todo (Ctrl+A) y pégalo entero.')
   } else if (!key.includes('-----BEGIN PRIVATE KEY-----') || !key.includes('-----END PRIVATE KEY-----')) {
