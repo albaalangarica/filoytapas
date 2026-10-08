@@ -58,8 +58,8 @@ function seed(): Raw {
     ],
     REFLEXIONES: [
       [...SHEETS.REFLEXIONES],
-      ['demo-r1', '2026-10-01', 'juanma', 'Por qué limitar el alquiler no basta', 'https://example.com/alquiler', now, ''],
-      ['demo-r2', '2026-10-01', 'martina', 'Mis notas de la noche', 'https://example.com/notas', now, ''],
+      ['demo-r1', '2026-10-01', 'juanma', '', 'https://example.com/alquiler', now, '', 'Me quedo con la idea de que limitar el precio sin construir más solo reparte la escasez. Os dejo un artículo que lo explica bien.'],
+      ['demo-r2', '2026-10-01', 'martina', '', '', now, '', '¿Tenemos derecho a quedarnos en nuestra ciudad cuando ella cambia? Creo que la pregunta de fondo fue la brecha entre generaciones, no la vivienda.'],
     ],
     USUARIOS: [
       [...SHEETS.USUARIOS],

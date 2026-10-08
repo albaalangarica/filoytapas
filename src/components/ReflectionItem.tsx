@@ -9,7 +9,7 @@ import { SubmitButton } from './SubmitButton'
 
 export function ReflectionItem({
   id,
-  titulo,
+  texto,
   url,
   usuario,
   nombre,
@@ -17,7 +17,7 @@ export function ReflectionItem({
   canDelete,
 }: {
   id: string
-  titulo: string
+  texto: string
   url: string
   usuario: string
   nombre: string
@@ -28,51 +28,59 @@ export function ReflectionItem({
   const done = useCallback(() => setMode('view'), [])
   let host = ''
   try {
-    host = new URL(url).hostname.replace(/^www\./, '')
+    host = url ? new URL(url).hostname.replace(/^www\./, '') : ''
   } catch {}
 
   return (
-    <li className="rounded-card border border-line bg-paper p-4">
+    <li className="rounded-card border border-line bg-white p-4">
+      <div className="flex items-center gap-2.5">
+        <Avatar usuario={usuario} nombre={nombre} size="sm" />
+        <span className="font-bold">{nombre}</span>
+      </div>
       {mode === 'edit' ? (
-        <EditReflection id={id} titulo={titulo} url={url} onDone={done} />
-      ) : (
-        <div className="flex items-start gap-3">
-          <Avatar usuario={usuario} nombre={nombre} />
-          <div className="min-w-0 flex-1">
-            <a href={url} target="_blank" rel="noopener noreferrer nofollow" className="group block">
-              <span className="font-display text-base font-bold leading-snug group-hover:text-cobalt group-hover:underline">{titulo}</span>
-              <span className="mt-0.5 flex items-center gap-1 text-sm text-muted">
-                {nombre} · {host}
-                <Icon name="external" className="size-3.5" />
-              </span>
-            </a>
-            {mode === 'confirm' ? (
-              <form action={deleteReflection} className="mt-3 flex flex-wrap items-center gap-2 text-sm">
-                <input type="hidden" name="id" value={id} />
-                <span className="font-semibold">¿Borrar esta reflexión?</span>
-                <SubmitButton variant="danger" pendingText="Borrando…" className="py-1.5">
-                  Sí, borrar
-                </SubmitButton>
-                <button type="button" onClick={done} className="px-2 py-1.5 font-semibold text-muted">
-                  No
-                </button>
-              </form>
-            ) : canEdit || canDelete ? (
-              <div className="mt-2 flex gap-3 text-sm font-semibold">
-                {canEdit ? (
-                  <button type="button" onClick={() => setMode('edit')} className="flex items-center gap-1 text-cobalt">
-                    <Icon name="edit" className="size-4" /> Editar
-                  </button>
-                ) : null}
-                {canDelete ? (
-                  <button type="button" onClick={() => setMode('confirm')} className="flex items-center gap-1 text-danger">
-                    <Icon name="trash" className="size-4" /> Borrar
-                  </button>
-                ) : null}
-              </div>
-            ) : null}
-          </div>
+        <div className="mt-3">
+          <EditReflection id={id} texto={texto} url={url} onDone={done} />
         </div>
+      ) : (
+        <>
+          <p className="mt-2.5 whitespace-pre-line leading-relaxed">{texto}</p>
+          {url ? (
+            <a
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+              className="mt-3 inline-flex max-w-full items-center gap-1.5 rounded-full bg-mist px-3 py-1.5 text-sm font-semibold text-terra-700 hover:bg-terra-50"
+            >
+              <Icon name="external" className="size-4 shrink-0" />
+              <span className="truncate">{host || 'Abrir enlace'}</span>
+            </a>
+          ) : null}
+          {mode === 'confirm' ? (
+            <form action={deleteReflection} className="mt-3 flex flex-wrap items-center gap-2 text-sm">
+              <input type="hidden" name="id" value={id} />
+              <span className="font-semibold">¿Borrar esta aportación?</span>
+              <SubmitButton variant="danger" pendingText="Borrando…" className="py-1.5">
+                Sí, borrar
+              </SubmitButton>
+              <button type="button" onClick={done} className="px-2 py-1.5 font-semibold text-muted">
+                No
+              </button>
+            </form>
+          ) : canEdit || canDelete ? (
+            <div className="mt-3 flex gap-4 text-sm font-semibold">
+              {canEdit ? (
+                <button type="button" onClick={() => setMode('edit')} className="flex items-center gap-1 text-oliva-700">
+                  <Icon name="edit" className="size-4" /> Editar
+                </button>
+              ) : null}
+              {canDelete ? (
+                <button type="button" onClick={() => setMode('confirm')} className="flex items-center gap-1 text-danger">
+                  <Icon name="trash" className="size-4" /> Borrar
+                </button>
+              ) : null}
+            </div>
+          ) : null}
+        </>
       )}
     </li>
   )

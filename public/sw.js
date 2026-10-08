@@ -1,7 +1,7 @@
 // Service worker mínimo: permite instalar la app y enseña una página amable sin conexión.
 // No cachea datos privados.
 const OFFLINE = '/offline.html'
-const CACHE = 'filoytapas-v1'
+const CACHE = 'filoytapas-v2'
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((c) => c.addAll([OFFLINE, '/brand/logo.svg'])))

@@ -5,14 +5,14 @@ import { getAppData } from '@/lib/data'
 import { nextThursday, todayInMadrid } from '@/lib/domain/dates'
 import { TopicForm } from '../../AdminForms'
 
-export const metadata: Metadata = { title: 'Nuevo tema' }
+export const metadata: Metadata = { title: 'Nueva sesión' }
 
 export default async function NewTopicPage() {
   await requireAdmin()
   const { config } = await getAppData()
   return (
     <>
-      <PageTitle eyebrow="Admin" title="Nuevo tema" />
+      <PageTitle eyebrow="Admin" title="Nueva sesión" />
       <TopicForm
         initial={{
           titulo: '',

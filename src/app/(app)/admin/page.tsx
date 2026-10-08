@@ -33,7 +33,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     <>
       <PageTitle eyebrow="Solo Martina y Juanma" title="Admin" />
       <Link href="/admin/temas/nuevo" className={`${buttonStyles.primary} w-full`}>
-        <Icon name="plus" /> Nuevo tema
+        <Icon name="plus" /> Nueva sesión
       </Link>
 
       <nav aria-label="Secciones de admin" className="-mx-4 mt-6 border-b border-line px-4">
@@ -44,11 +44,11 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
                 href={`?tab=${t.id}`}
                 replace
                 aria-current={tab === t.id ? 'page' : undefined}
-                className={cn('inline-flex items-center gap-1.5 border-b-[3px] px-3 py-3 text-sm font-bold', tab === t.id ? 'border-mandarin' : 'border-transparent text-muted')}
+                className={cn('inline-flex items-center gap-1.5 border-b-[3px] px-3 py-3 text-sm font-bold', tab === t.id ? 'border-terra' : 'border-transparent text-muted')}
               >
                 {t.label}
                 {t.id === 'solicitudes' && pending.length > 0 ? (
-                  <span className="rounded-full bg-mandarin px-1.5 text-xs text-white">{pending.length}</span>
+                  <span className="rounded-full bg-terra px-1.5 text-xs text-white">{pending.length}</span>
                 ) : null}
               </Link>
             </li>
@@ -100,14 +100,14 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
               const { day, month } = dayAndMonth(t.fecha)
               return (
                 <li key={t.id} className="flex items-center gap-3 rounded-2xl border border-line p-3">
-                  <span className="w-12 text-center font-display text-sm font-extrabold text-mandarin-700">
+                  <span className="w-12 text-center font-display text-sm font-semibold text-terra-700">
                     {day} {month}
                   </span>
-                  <Link href={`/jueves/${encodeURIComponent(t.id)}`} className="min-w-0 flex-1 truncate font-semibold hover:text-cobalt">
+                  <Link href={`/sesiones/${encodeURIComponent(t.id)}`} className="min-w-0 flex-1 truncate font-semibold hover:text-oliva">
                     {t.titulo}
                   </Link>
-                  {!t.publicado ? <span className="rounded-full bg-cobalt-50 px-2 py-0.5 text-xs font-bold text-cobalt">Borrador</span> : null}
-                  <Link href={`/admin/temas/${encodeURIComponent(t.id)}/editar`} aria-label={`Editar ${t.titulo}`} className="rounded-xl p-2 text-cobalt hover:bg-cobalt-50">
+                  {!t.publicado ? <span className="rounded-full bg-oliva-50 px-2 py-0.5 text-xs font-bold text-oliva">Borrador</span> : null}
+                  <Link href={`/admin/temas/${encodeURIComponent(t.id)}/editar`} aria-label={`Editar ${t.titulo}`} className="rounded-xl p-2 text-oliva hover:bg-oliva-50">
                     <Icon name="edit" />
                   </Link>
                 </li>
@@ -142,7 +142,7 @@ function MemberRow({ user, isMe }: { user: User; isMe: boolean }) {
             <form action={setRole}>
               <input type="hidden" name="usuario" value={user.usuario} />
               <input type="hidden" name="rol" value={user.rol === 'admin' ? 'miembro' : 'admin'} />
-              <button type="submit" className="font-semibold text-cobalt">
+              <button type="submit" className="font-semibold text-oliva">
                 {user.rol === 'admin' ? 'Quitar admin' : 'Hacer admin'}
               </button>
             </form>

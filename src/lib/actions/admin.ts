@@ -56,7 +56,7 @@ export async function saveTopic(_prev: FormState, formData: FormData): Promise<F
     await getStore().append('TEMAS', buildRow(workbook.TEMAS, { id, ...values, autor: me.nombre }))
   }
   updateTag(SHEETS_CACHE_TAG)
-  redirect(`/jueves/${encodeURIComponent(id)}`)
+  redirect(`/sesiones/${encodeURIComponent(id)}`)
 }
 
 async function updateUser(usuario: string, changes: Record<string, string>) {

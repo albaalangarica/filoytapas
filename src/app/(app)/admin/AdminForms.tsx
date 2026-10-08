@@ -19,7 +19,7 @@ export function ResetPasswordButton({ usuario }: { usuario: string }) {
   }
   if (!confirm) {
     return (
-      <button type="button" onClick={() => setConfirm(true)} className="text-sm font-semibold text-cobalt">
+      <button type="button" onClick={() => setConfirm(true)} className="text-sm font-semibold text-oliva">
         Resetear contraseña
       </button>
     )
@@ -85,16 +85,16 @@ export function TopicForm({ initial }: { initial: TopicFormValues }) {
       <Field label="Frase para confirmar" htmlFor="t-llamada" hint="Va encima de los botones Voy / No puedo.">
         <input id="t-llamada" name="llamada" maxLength={120} defaultValue={initial.llamada} className={inputStyles} placeholder="¿Contamos contigo?" />
       </Field>
-      <Field label="Materiales de este jueves (opcional)" htmlFor="t-materiales" hint="Enlace a un documento o subcarpeta de Drive.">
+      <Field label="Enlace al podcast (opcional)" htmlFor="t-materiales" hint="Si lo dejas vacío, se usa el enlace general de CONFIG (drive_url).">
         <input id="t-materiales" name="materiales_url" type="url" defaultValue={initial.materiales_url} className={inputStyles} placeholder="https://drive.google.com/…" />
       </Field>
       <label className="flex items-center gap-3 rounded-2xl bg-mist p-4 font-semibold">
-        <input type="checkbox" name="publicado" defaultChecked={initial.publicado} className="size-5 accent-mandarin" />
+        <input type="checkbox" name="publicado" defaultChecked={initial.publicado} className="size-5 accent-terra" />
         Publicar ya (si no, se guarda como borrador que solo veis los admins)
       </label>
       {state.error ? <Notice kind="error">{state.error}</Notice> : null}
-      <SubmitButton pendingText="Guardando…">{editing ? 'Guardar cambios' : 'Publicar tema'}</SubmitButton>
-      <a href={initial.id ? `/jueves/${encodeURIComponent(initial.id)}` : '/admin'} className={buttonStyles.ghost}>
+      <SubmitButton pendingText="Guardando…">{editing ? 'Guardar cambios' : 'Publicar sesión'}</SubmitButton>
+      <a href={initial.id ? `/sesiones/${encodeURIComponent(initial.id)}` : '/admin'} className={buttonStyles.ghost}>
         Cancelar
       </a>
     </form>

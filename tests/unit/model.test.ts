@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { isOpenForRsvp, newTopicId, parseAttendance, parseConfig, parseReflections, parseTopics, parseUsers, upcomingTopic } from '@/lib/domain/model'
+import { isOpenForContributions, isOpenForRsvp, newTopicId, parseAttendance, parseConfig, parseReflections, parseTopics, parseUsers, upcomingTopic } from '@/lib/domain/model'
 import { buildRow, toTable } from '@/lib/store/types'
 
 const temas = toTable([
@@ -47,8 +47,27 @@ describe('lectura del Sheet', () => {
   it('ignora asistencias y reflexiones mal formadas', () => {
     const att = parseAttendance(toTable([['tema_id', 'usuario', 'respuesta'], ['t', 'a', 'voy'], ['t', 'b', 'quizá']]))
     expect(att).toHaveLength(1)
-    const refl = parseReflections(toTable([['id', 'tema_id', 'usuario', 'titulo', 'url'], ['1', 't', 'a', 'ok', 'https://x.es'], ['2', 't', 'a', 'mal', 'ftp://x']]))
-    expect(refl.map((r) => r.id)).toEqual(['1'])
+    const refl = parseReflections(
+      toTable([
+        ['id', 'tema_id', 'usuario', 'titulo', 'url', 'texto'],
+        ['1', 't', 'a', '', 'https://x.es', 'Lo que pienso'],
+        ['2', 't', 'a', 'antigua', 'https://y.es', ''],
+        ['3', 't', 'a', '', 'ftp://x', ''],
+        ['4', 't', 'a', '', '', 'Solo texto'],
+      ]),
+    )
+    expect(refl.map((r) => r.id)).toEqual(['1', '2', '4'])
+    expect(refl.find((r) => r.id === '2')?.texto).toBe('antigua')
+    expect(refl.find((r) => r.id === '4')?.url).toBe('')
+  })
+
+  it('las aportaciones se abren cuando empieza la sesión', () => {
+    const poder = parseTopics(temas).find((t) => t.id === '2026-10-08')!
+    expect(isOpenForContributions(poder, '2026-10-08 20:59')).toBe(false)
+    expect(isOpenForContributions(poder, '2026-10-08 21:00')).toBe(true)
+    expect(isOpenForContributions(poder, '2026-10-09 10:00')).toBe(true)
+    const borrador = parseTopics(temas).find((t) => t.id === 'borrador')!
+    expect(isOpenForContributions(borrador, '2027-01-01 00:00')).toBe(false)
   })
 
   it('lee la configuración', () => {

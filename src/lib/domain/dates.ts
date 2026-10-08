@@ -7,6 +7,21 @@ export function todayInMadrid(now: Date = new Date()): string {
   return new Intl.DateTimeFormat('en-CA', { timeZone: TIME_ZONE, year: 'numeric', month: '2-digit', day: '2-digit' }).format(now)
 }
 
+/** Ahora en Madrid, como "AAAA-MM-DD HH:MM" (comparable como texto). */
+export function madridNow(now: Date = new Date()): string {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: TIME_ZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(now)
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? '00'
+  return `${get('year')}-${get('month')}-${get('day')} ${get('hour')}:${get('minute')}`
+}
+
 /**
  * Acepta AAAA-MM-DD, D/M/AAAA o el número de serie de Sheets (46296 = 1/10/2026),
  * que es lo que aparece si alguien escribe la fecha a mano y Sheets la convierte.

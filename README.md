@@ -9,14 +9,15 @@ Todos los datos viven en un **Google Sheet** de tu Drive. La app se publica en *
 | Pantalla | Qué permite |
 |---|---|
 | **Entrar / Solicitar acceso** | Usuario y contraseña. Quien no tiene cuenta la solicita y un admin la aprueba. |
-| **Inicio** | El próximo jueves en grande: título, cita, hora, bar, botones Voy / No puedo y quién va. Las dos primeras preguntas y los últimos jueves. |
-| **Jueves** | Una tarjeta por convocatoria, con asistentes y número de reflexiones. |
-| **Ficha** | Pestañas *Tema* (introducción y preguntas), *Asistentes* (nombres) y *Reflexiones* (enlaces de cada uno, con título). Botón para compartir en WhatsApp. |
-| **Materiales** | Enlace a la carpeta de Drive y a los materiales de cada jueves. |
-| **Perfil** | Mis jueves, mis reflexiones, instalar la app, cambiar contraseña, salir. |
-| **Admin** | Publicar y editar temas (también como borrador), aprobar o rechazar solicitudes, hacer o quitar admin, resetear contraseñas y dar de baja. |
+| **Inicio** | La sesión de hoy (o la próxima) entera: título, cita, hora, bar, texto, todas las preguntas y el enlace al podcast. Debajo, Voy 🔥 / No puedo 💔 y quién va. |
+| **Sesiones** | Las sesiones anteriores, una tarjeta por sesión. Cada ficha tiene *Tema*, *Asistentes* y *Aportaciones*. Botón para compartir en WhatsApp. |
+| **Aportaciones** | Lo que dice cada uno, agrupado por tema. Se pueden escribir desde que empieza la sesión (día y hora) y las ve todo el grupo. Texto y, si se quiere, un enlace. |
+| **Perfil** | Mis sesiones, mis aportaciones, instalar la app, cambiar contraseña, salir. Los admins tienen aquí el acceso al panel. |
+| **Admin** | Publicar y editar sesiones (también como borrador), aprobar o rechazar solicitudes, hacer o quitar admin, resetear contraseñas y dar de baja. |
 
-Reglas: cada miembro edita y borra sus reflexiones; los admins pueden borrar cualquiera. Se puede confirmar asistencia hasta el mismo día del encuentro. Si alguien olvida la contraseña, un admin genera una provisional desde *Admin → Miembros*.
+El enlace al podcast es el de cada sesión (columna `materiales_url`) o, si no tiene, el general de CONFIG (`drive_url`).
+
+Reglas: cada miembro edita y borra sus aportaciones; los admins pueden borrar cualquiera. Se puede confirmar asistencia hasta el mismo día del encuentro. Si alguien olvida la contraseña, un admin genera una provisional desde *Admin → Miembros*.
 
 ## El Google Sheet
 
@@ -26,9 +27,9 @@ Documento: **«Filo y Tapas · Datos de la app»** en el Drive de Alba. Pestaña
 |---|---|
 | `TEMAS` | id, fecha, hora, lugar, titulo, cita, introduccion, preguntas (una por línea), llamada, materiales_url, autor, publicado (sí/no) |
 | `ASISTENCIA` | tema_id, usuario, respuesta (voy/no), actualizado |
-| `REFLEXIONES` | id, tema_id, usuario, titulo, url, creado, actualizado |
+| `REFLEXIONES` | id, tema_id, usuario, titulo (antiguo), url, creado, actualizado, texto — las aportaciones |
 | `USUARIOS` | usuario, nombre, password_hash, rol (miembro/admin), estado (pendiente/activo/rechazado/baja), creado, sesion |
-| `CONFIG` | clave, valor: `drive_url`, `lugar_defecto`, `hora_defecto`, `maps_url`, `ciudad` |
+| `CONFIG` | clave, valor: `drive_url` (podcast general), `lugar_defecto`, `hora_defecto`, `maps_url`, `ciudad` |
 
 Se puede editar a mano. La app localiza las columnas por su nombre en la primera fila, así que no las renombres. Las contraseñas se guardan cifradas (scrypt) y nunca en claro. Los cambios hechos a mano tardan hasta 30 segundos en verse.
 
@@ -81,17 +82,17 @@ npm run check      # lint + tipos + tests + build
 
 ## Stack
 
-Next.js 16 (App Router, Server Actions) · React 19 · TypeScript estricto · Tailwind CSS 4 · zod · Vitest. Sin dependencias de UI ni de Google: la API de Sheets se llama con `fetch` y una firma JWT de Node. Tipografías Bricolage Grotesque y Figtree servidas localmente.
+Next.js 16 (App Router, Server Actions) · React 19 · TypeScript estricto · Tailwind CSS 4 · zod · Vitest. Sin dependencias de UI ni de Google: la API de Sheets se llama con `fetch` y una firma JWT de Node. Estilo mediterráneo (cal, terracota, oliva, azulejo). Tipografías Fraunces y Figtree servidas localmente.
 
 ```
 src/
   app/(auth)/        entrar, solicitar acceso
-  app/(app)/         inicio, jueves, ficha, materiales, perfil, admin
+  app/(app)/         inicio, sesiones, ficha, aportaciones, perfil, admin
   components/        interfaz (logo vectorial, tarjetas, botones…)
   lib/store/         acceso al Sheet (Google) y almacén en memoria (demo)
   lib/domain/        tipos, lectura de pestañas, fechas, validación
   lib/auth/          contraseñas (scrypt) y sesión firmada (HMAC)
-  lib/actions/       server actions: login, asistencia, reflexiones, admin
+  lib/actions/       server actions: login, asistencia, aportaciones, admin
 ```
 
 ### Seguridad

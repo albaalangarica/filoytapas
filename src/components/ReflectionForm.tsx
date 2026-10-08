@@ -7,13 +7,17 @@ import { Icon } from './Icon'
 import { SubmitButton } from './SubmitButton'
 import { Field, Notice, buttonStyles, inputStyles } from './ui'
 
-export function AddReflection({ temaId }: { temaId: string }) {
+export function AddReflection({ temaId, compact = false }: { temaId: string; compact?: boolean }) {
   const [open, setOpen] = useState(false)
   const [state, action] = useActionState(addReflection, initialFormState)
   const formRef = useRef<HTMLFormElement>(null)
 
   useEffect(() => {
-    if (state.ok) formRef.current?.reset()
+    if (state.ok) {
+      formRef.current?.reset()
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- cerrar el formulario tras publicar
+      setOpen(false)
+    }
   }, [state])
 
   if (!open) {
@@ -23,38 +27,49 @@ export function AddReflection({ temaId }: { temaId: string }) {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="flex items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-cobalt px-4 py-3.5 font-bold text-cobalt hover:bg-cobalt-50"
+          className={
+            compact
+              ? 'inline-flex items-center gap-1.5 self-start text-sm font-bold text-terra-700 hover:underline'
+              : 'flex items-center justify-center gap-2 rounded-full border-2 border-dashed border-terra/50 px-4 py-3.5 font-bold text-terra-700 hover:bg-terra-50'
+          }
         >
-          <Icon name="plus" /> Añadir mi reflexión
+          <Icon name="plus" className="size-4" /> Añadir mi aportación
         </button>
       </div>
     )
   }
 
   return (
-    <form ref={formRef} action={action} className="flex flex-col gap-4 rounded-card border border-line bg-mist p-4">
+    <form ref={formRef} action={action} className="flex flex-col gap-4 rounded-card border border-line bg-white p-4">
       <input type="hidden" name="temaId" value={temaId} />
-      <Field label="Título" htmlFor="r-titulo" hint="Una frase que invite a leerla.">
-        <input id="r-titulo" name="titulo" required maxLength={120} className={inputStyles} placeholder="Por qué el control de alquileres no basta" />
+      <Field label="¿Qué te llevas de la sesión?" htmlFor={`r-texto-${temaId}`} hint="Lo verá todo el grupo.">
+        <textarea
+          id={`r-texto-${temaId}`}
+          name="texto"
+          required
+          rows={5}
+          maxLength={2000}
+          className={inputStyles}
+          placeholder="Una idea, una duda, algo que te hizo cambiar de opinión…"
+        />
       </Field>
-      <Field label="Enlace" htmlFor="r-url" hint="Un artículo, un documento, un post, un audio…">
-        <input id="r-url" name="url" type="url" inputMode="url" required className={inputStyles} placeholder="https://" />
+      <Field label="Enlace (opcional)" htmlFor={`r-url-${temaId}`} hint="Un artículo, un vídeo, un audio…">
+        <input id={`r-url-${temaId}`} name="url" type="url" inputMode="url" className={inputStyles} placeholder="https://" />
       </Field>
       {state.error ? <Notice kind="error">{state.error}</Notice> : null}
-      {state.ok ? <Notice kind="ok">{state.ok}</Notice> : null}
       <div className="flex gap-2">
-        <SubmitButton pendingText="Guardando…" className="flex-1">
-          Publicar reflexión
+        <SubmitButton pendingText="Publicando…" className="flex-1">
+          Publicar
         </SubmitButton>
         <button type="button" onClick={() => setOpen(false)} className={buttonStyles.ghost}>
-          Cerrar
+          Cancelar
         </button>
       </div>
     </form>
   )
 }
 
-export function EditReflection({ id, titulo, url, onDone }: { id: string; titulo: string; url: string; onDone: () => void }) {
+export function EditReflection({ id, texto, url, onDone }: { id: string; texto: string; url: string; onDone: () => void }) {
   const [state, action] = useActionState(editReflection, initialFormState)
   useEffect(() => {
     if (state.ok) onDone()
@@ -62,8 +77,8 @@ export function EditReflection({ id, titulo, url, onDone }: { id: string; titulo
   return (
     <form action={action} className="flex flex-col gap-3">
       <input type="hidden" name="id" value={id} />
-      <input aria-label="Título" name="titulo" defaultValue={titulo} required maxLength={120} className={inputStyles} />
-      <input aria-label="Enlace" name="url" type="url" defaultValue={url} required className={inputStyles} />
+      <textarea aria-label="Aportación" name="texto" defaultValue={texto} required rows={5} maxLength={2000} className={inputStyles} />
+      <input aria-label="Enlace (opcional)" name="url" type="url" defaultValue={url} placeholder="https:// (opcional)" className={inputStyles} />
       {state.error ? <Notice kind="error">{state.error}</Notice> : null}
       <div className="flex gap-2">
         <SubmitButton pendingText="Guardando…" className="flex-1 py-2.5">

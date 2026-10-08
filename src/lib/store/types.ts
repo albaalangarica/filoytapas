@@ -6,7 +6,7 @@
 export const SHEETS = {
   TEMAS: ['id', 'fecha', 'hora', 'lugar', 'titulo', 'cita', 'introduccion', 'preguntas', 'llamada', 'materiales_url', 'autor', 'publicado'],
   ASISTENCIA: ['tema_id', 'usuario', 'respuesta', 'actualizado'],
-  REFLEXIONES: ['id', 'tema_id', 'usuario', 'titulo', 'url', 'creado', 'actualizado'],
+  REFLEXIONES: ['id', 'tema_id', 'usuario', 'titulo', 'url', 'creado', 'actualizado', 'texto'],
   USUARIOS: ['usuario', 'nombre', 'password_hash', 'rol', 'estado', 'creado', 'sesion'],
   CONFIG: ['clave', 'valor', 'para qué sirve'],
 } as const

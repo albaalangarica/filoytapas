@@ -1,5 +1,5 @@
 import { cell, type SheetRow, type SheetTable, type Workbook } from '@/lib/store/types'
-import { normalizeDate, normalizeTime } from './dates'
+import { madridNow, normalizeDate, normalizeTime } from './dates'
 
 /* Tipos de dominio y lectura de las pestañas del Sheet. Funciones puras: fáciles de testear. */
 
@@ -42,11 +42,12 @@ export interface Attendance {
   rowNumber: number
 }
 
+/** Aportación de un miembro tras la sesión: lo que dice (texto) y, si quiere, un enlace. */
 export interface Reflection {
   id: string
   temaId: string
   usuario: string
-  titulo: string
+  texto: string
   url: string
   creado: string
   rowNumber: number
@@ -149,12 +150,14 @@ export function parseAttendance(table: SheetTable): Attendance[] {
 export function parseReflections(table: SheetTable): Reflection[] {
   return rows(table, (get, row) => {
     const url = safeUrl(get('url'))
-    if (!get('id') || !get('tema_id') || !url) return null
+    // Las primeras aportaciones eran título + enlace; ahora el texto es lo principal.
+    const texto = get('texto') || get('titulo')
+    if (!get('id') || !get('tema_id') || (!texto && !url)) return null
     return {
       id: get('id'),
       temaId: topicId(get('tema_id')),
       usuario: normalizeUsername(get('usuario')),
-      titulo: get('titulo') || url,
+      texto,
       url,
       creado: get('creado'),
       rowNumber: row.rowNumber,
@@ -195,6 +198,11 @@ export function parseWorkbook(wb: Workbook): AppData {
 /** Próximo encuentro: el publicado más cercano con fecha de hoy en adelante. */
 export function upcomingTopic(topics: Topic[], today: string): Topic | undefined {
   return topics.filter((t) => t.publicado && t.fecha >= today).sort((a, b) => (a.fecha < b.fecha ? -1 : 1))[0]
+}
+
+/** Las aportaciones se abren cuando empieza la sesión (fecha y hora de Madrid). */
+export function isOpenForContributions(topic: Topic, now: string = madridNow()): boolean {
+  return topic.publicado && `${topic.fecha} ${topic.hora}` <= now
 }
 
 export function isOpenForRsvp(topic: Topic, today: string): boolean {

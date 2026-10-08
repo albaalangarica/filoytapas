@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { longDate, nextThursday, normalizeDate, normalizeTime, relativeLabel, todayInMadrid } from '@/lib/domain/dates'
+import { longDate, madridNow, nextThursday, normalizeDate, normalizeTime, relativeLabel, todayInMadrid } from '@/lib/domain/dates'
 
 describe('fechas', () => {
   it('acepta AAAA-MM-DD y D/M/AAAA', () => {
@@ -23,6 +23,11 @@ describe('fechas', () => {
   it('calcula hoy en hora de Madrid', () => {
     // 23:30 UTC del 7 de octubre ya es 8 de octubre en Madrid (UTC+2).
     expect(todayInMadrid(new Date('2026-10-07T23:30:00Z'))).toBe('2026-10-08')
+  })
+
+  it('da la hora de Madrid comparable como texto', () => {
+    expect(madridNow(new Date('2026-10-08T19:05:00Z'))).toBe('2026-10-08 21:05')
+    expect(madridNow(new Date('2026-12-01T23:30:00Z'))).toBe('2026-12-02 00:30')
   })
 
   it('formatea en castellano', () => {

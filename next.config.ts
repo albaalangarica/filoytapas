@@ -13,6 +13,14 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
+  async redirects() {
+    // Nombres antiguos de las secciones, por si alguien guardó un enlace.
+    return [
+      { source: '/jueves', destination: '/sesiones', permanent: true },
+      { source: '/jueves/:id', destination: '/sesiones/:id', permanent: true },
+      { source: '/materiales', destination: '/', permanent: true },
+    ]
+  },
   async headers() {
     return [
       { source: '/:path*', headers: securityHeaders },

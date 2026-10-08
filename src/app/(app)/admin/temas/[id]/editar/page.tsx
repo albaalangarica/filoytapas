@@ -5,7 +5,7 @@ import { requireAdmin } from '@/lib/auth/session'
 import { getAppData } from '@/lib/data'
 import { TopicForm } from '../../../AdminForms'
 
-export const metadata: Metadata = { title: 'Editar tema' }
+export const metadata: Metadata = { title: 'Editar sesión' }
 
 export default async function EditTopicPage({ params }: { params: Promise<{ id: string }> }) {
   await requireAdmin()
@@ -14,7 +14,7 @@ export default async function EditTopicPage({ params }: { params: Promise<{ id: 
   if (!topic) notFound()
   return (
     <>
-      <PageTitle eyebrow="Admin" title="Editar tema" />
+      <PageTitle eyebrow="Admin" title="Editar sesión" />
       <TopicForm
         initial={{
           id: topic.id,

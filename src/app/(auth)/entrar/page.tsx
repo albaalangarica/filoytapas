@@ -31,7 +31,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   if (problem) {
     return (
       <div className="flex flex-col gap-4">
-        <h1 className="text-2xl font-extrabold">Falta un ajuste</h1>
+        <h1 className="text-2xl font-semibold">Falta un ajuste</h1>
         <Notice kind="error">{problem}</Notice>
         <p className="text-sm text-muted">Tras corregirlo en Vercel (Settings → Environments → Production), haz Redeploy.</p>
       </div>

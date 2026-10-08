@@ -4,8 +4,8 @@ import { SubmitButton } from './SubmitButton'
 import { cn } from './ui'
 
 /** Voy 🔥 / No puedo 💔. Funciona aunque el JavaScript aún no haya cargado. */
-export function RsvpButtons({ temaId, myAnswer, onDark = false }: { temaId: string; myAnswer: Answer | null; onDark?: boolean }) {
-  const base = 'w-full rounded-2xl px-3 py-3.5 text-base font-extrabold transition active:scale-[0.98] disabled:opacity-80'
+export function RsvpButtons({ temaId, myAnswer }: { temaId: string; myAnswer: Answer | null }) {
+  const base = 'w-full rounded-full px-3 py-3.5 text-base font-bold transition active:scale-[0.98] disabled:opacity-80'
   return (
     <form action={setAttendance} className="grid grid-cols-2 gap-3">
       <input type="hidden" name="temaId" value={temaId} />
@@ -17,14 +17,10 @@ export function RsvpButtons({ temaId, myAnswer, onDark = false }: { temaId: stri
         className={cn(
           base,
           myAnswer === 'voy'
-            ? 'bg-mandarin text-white ring-4 ring-mandarin/30 animate-pop'
-            : onDark
-              ? myAnswer === 'no'
-                ? 'bg-white/15 text-white hover:bg-white/25'
-                : 'bg-white text-mandarin-700'
-              : myAnswer === 'no'
-                ? 'bg-mist text-ink'
-                : 'bg-mandarin text-white',
+            ? 'animate-pop bg-terra text-white ring-4 ring-terra/25'
+            : myAnswer === 'no'
+              ? 'border border-terra/40 bg-white text-terra-700'
+              : 'bg-terra text-white shadow-[0_4px_0_0_var(--color-terra-700)]',
         )}
       >
         {myAnswer === 'voy' ? '¡Voy! 🔥' : 'Voy 🔥'}
@@ -36,13 +32,7 @@ export function RsvpButtons({ temaId, myAnswer, onDark = false }: { temaId: stri
         variant="bare"
         className={cn(
           base,
-          myAnswer === 'no'
-            ? onDark
-              ? 'bg-white text-ink ring-4 ring-white/30'
-              : 'bg-ink text-white ring-4 ring-ink/20'
-            : onDark
-              ? 'bg-white/15 text-white hover:bg-white/25'
-              : 'bg-mist text-ink',
+          myAnswer === 'no' ? 'bg-oliva text-white ring-4 ring-oliva/25' : 'border border-oliva/30 bg-oliva-50 text-oliva-700',
         )}
       >
         No puedo 💔
