@@ -9,6 +9,7 @@ import { hashPassword, verifyPassword } from '@/lib/auth/password'
 import { endSession, requireUser, startSession } from '@/lib/auth/session'
 import { normalizeUsername } from '@/lib/domain/model'
 import { firstError, passwordSchema, registerSchema } from '@/lib/domain/validation'
+import { explainStoreError } from '@/lib/store/errors'
 import type { FormState } from './state'
 
 /*
@@ -41,7 +42,13 @@ export async function login(_prev: FormState, formData: FormData): Promise<FormS
   if (!usuario || !password) return { error: 'Escribe tu usuario y tu contraseña.' }
   if (isLocked(usuario)) return { error: 'Demasiados intentos. Espera unos minutos y vuelve a probar.' }
 
-  const { data } = await readFresh()
+  let data
+  try {
+    ;({ data } = await readFresh())
+  } catch (error) {
+    console.error('login: no se pudo leer el Sheet', error)
+    return { error: explainStoreError(error) }
+  }
   const user = data.users.find((u) => u.usuario === usuario)
   if (!user || !user.passwordHash || !verifyPassword(password, user.passwordHash)) {
     registerFailure(usuario)
@@ -64,22 +71,27 @@ export async function requestAccess(_prev: FormState, formData: FormData): Promi
   if (!parsed.success) return { error: firstError(parsed.error) }
   if (parsed.data.password !== formData.get('password2')) return { error: 'Las dos contraseñas no coinciden.' }
 
-  const { workbook, data } = await readFresh()
-  if (data.users.some((u) => u.usuario === parsed.data.usuario)) {
-    return { error: 'Ese nombre de usuario ya existe. Prueba con otro.' }
+  try {
+    const { workbook, data } = await readFresh()
+    if (data.users.some((u) => u.usuario === parsed.data.usuario)) {
+      return { error: 'Ese nombre de usuario ya existe. Prueba con otro.' }
+    }
+    await getStore().append(
+      'USUARIOS',
+      buildRow(workbook.USUARIOS, {
+        usuario: parsed.data.usuario,
+        nombre: parsed.data.nombre,
+        password_hash: hashPassword(parsed.data.password),
+        rol: 'miembro',
+        estado: 'pendiente',
+        creado: new Date().toISOString(),
+        sesion: '1',
+      }),
+    )
+  } catch (error) {
+    console.error('solicitar acceso: no se pudo escribir en el Sheet', error)
+    return { error: explainStoreError(error) }
   }
-  await getStore().append(
-    'USUARIOS',
-    buildRow(workbook.USUARIOS, {
-      usuario: parsed.data.usuario,
-      nombre: parsed.data.nombre,
-      password_hash: hashPassword(parsed.data.password),
-      rol: 'miembro',
-      estado: 'pendiente',
-      creado: new Date().toISOString(),
-      sesion: '1',
-    }),
-  )
   updateTag(SHEETS_CACHE_TAG)
   return { ok: '¡Solicitud enviada! Cuando Martina o Juanma la aprueben, podrás entrar con tu usuario y contraseña.' }
 }
