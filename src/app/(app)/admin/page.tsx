@@ -9,6 +9,7 @@ import { requireAdmin } from '@/lib/auth/session'
 import { getAppData } from '@/lib/data'
 import { dayAndMonth } from '@/lib/domain/dates'
 import type { User } from '@/lib/domain/model'
+import { formatEuros } from '@/lib/domain/money'
 import { ResetPasswordButton } from './AdminForms'
 
 export const metadata: Metadata = { title: 'Admin' }
@@ -16,7 +17,8 @@ export const metadata: Metadata = { title: 'Admin' }
 const TABS = [
   { id: 'solicitudes', label: 'Solicitudes' },
   { id: 'miembros', label: 'Miembros' },
-  { id: 'temas', label: 'Temas' },
+  { id: 'temas', label: 'Sesiones' },
+  { id: 'cuentas', label: 'Cuentas' },
 ] as const
 
 export default async function AdminPage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
@@ -94,6 +96,8 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
           </ul>
         ) : null}
 
+        {tab === 'cuentas' ? <PendingSummary data={data} /> : null}
+
         {tab === 'temas' ? (
           <ul className="flex flex-col gap-2">
             {data.topics.map((t) => {
@@ -158,5 +162,53 @@ function MemberRow({ user, isMe }: { user: User; isMe: boolean }) {
         </div>
       ) : null}
     </li>
+  )
+}
+
+/** Lo pendiente por persona en todas las sesiones. */
+function PendingSummary({ data }: { data: Awaited<ReturnType<typeof getAppData>> }) {
+  const names = new Map(data.users.map((u) => [u.usuario, u.nombre]))
+  const titles = new Map(data.topics.map((t) => [t.id, t.titulo]))
+  const byPerson = new Map<string, { total: number; items: { temaId: string; importe: number }[] }>()
+  for (const d of data.debts) {
+    if (d.pagado) continue
+    const entry = byPerson.get(d.usuario) ?? { total: 0, items: [] }
+    entry.total += d.importe
+    entry.items.push({ temaId: d.temaId, importe: d.importe })
+    byPerson.set(d.usuario, entry)
+  }
+  const people = [...byPerson.entries()].sort((a, b) => b[1].total - a[1].total)
+  const total = people.reduce((acc, [, v]) => acc + v.total, 0)
+  if (people.length === 0) {
+    return <Empty title="Nadie debe nada">Las cuentas de cada sesión se meten desde su ficha, pestaña «Cuentas».</Empty>
+  }
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="rounded-card border border-terra/30 bg-terra-50 p-4">
+        <p className="text-sm font-semibold text-muted">Pendiente de cobrar</p>
+        <p className="font-display text-3xl font-semibold tabular-nums text-cacao">{formatEuros(total)}</p>
+      </div>
+      <ul className="flex flex-col gap-2">
+        {people.map(([usuario, v]) => (
+          <li key={usuario} className="rounded-card border border-line bg-white p-4">
+            <div className="flex items-center gap-3">
+              <Avatar usuario={usuario} nombre={names.get(usuario) ?? usuario} size="sm" />
+              <span className="flex-1 font-bold">{names.get(usuario) ?? usuario}</span>
+              <span className="font-display text-lg font-semibold tabular-nums text-terra-700">{formatEuros(v.total)}</span>
+            </div>
+            <ul className="mt-2 flex flex-col gap-1 pl-10 text-sm text-muted">
+              {v.items.map((i) => (
+                <li key={i.temaId} className="flex justify-between gap-3">
+                  <Link href={`/sesiones/${encodeURIComponent(i.temaId)}?tab=cuentas`} className="truncate hover:text-terra-700">
+                    {titles.get(i.temaId) ?? i.temaId}
+                  </Link>
+                  <span className="tabular-nums">{formatEuros(i.importe)}</span>
+                </li>
+              ))}
+            </ul>
+          </li>
+        ))}
+      </ul>
+    </div>
   )
 }

@@ -69,6 +69,12 @@ function seed(): Raw {
       ['pedro', 'Pedro', hash, 'miembro', 'activo', now, '1'],
       ['lucia', 'Lucía', hash, 'miembro', 'pendiente', now, '1'],
     ],
+    CUENTAS: [
+      [...SHEETS.CUENTAS],
+      ['2026-10-01', 'martina', '12,50', 'sí', now],
+      ['2026-10-01', 'juanma', '12,50', 'no', now],
+      ['2026-10-01', 'alba', '12,50', 'no', now],
+    ],
     CONFIG: [
       [...SHEETS.CONFIG],
       ['drive_url', 'https://drive.google.com/', 'Enlace a la carpeta de Drive con los materiales'],
@@ -96,6 +102,12 @@ export const memoryStore: Store = {
   },
   async append(sheet, values) {
     data()[sheet].push([...values])
+  },
+  async appendMany(sheet, rows) {
+    for (const row of rows) data()[sheet].push([...row])
+  },
+  async updateMany(sheet, updates) {
+    for (const u of updates) data()[sheet][u.rowNumber - 1] = [...u.values]
   },
   async update(sheet, rowNumber, values) {
     data()[sheet][rowNumber - 1] = [...values]

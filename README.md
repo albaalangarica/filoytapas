@@ -13,6 +13,7 @@ Todos los datos viven en un **Google Sheet** de tu Drive. La app se publica en *
 | **Sesiones** | Las sesiones anteriores, una tarjeta por sesión. Cada ficha tiene *Tema*, *Asistentes* y *Aportaciones*. Botón para compartir en WhatsApp. |
 | **Aportaciones** | Lo que dice cada uno, agrupado por tema. Se pueden escribir desde que empieza la sesión (día y hora) y las ve todo el grupo. Texto y, si se quiere, un enlace. |
 | **Perfil** | Mis sesiones, mis aportaciones, instalar la app, cambiar contraseña, salir. Los admins tienen aquí el acceso al panel. |
+| **Cuentas** | Tipo Tricount. En cada sesión, los admins meten cuánto debe cada persona (con «Repartir a partes iguales» entre los que fueron) y marcan quién ha pagado. Cada persona ve solo lo suyo, en la sesión y en su perfil. El panel de admin resume lo pendiente por persona. |
 | **Admin** | Publicar y editar sesiones (también como borrador), aprobar o rechazar solicitudes, hacer o quitar admin, resetear contraseñas y dar de baja. |
 
 El enlace al podcast es el de cada sesión (columna `materiales_url`) o, si no tiene, el general de CONFIG (`drive_url`).
@@ -29,6 +30,7 @@ Documento: **«Filo y Tapas · Datos de la app»** en el Drive de Alba. Pestaña
 | `ASISTENCIA` | tema_id, usuario, respuesta (voy/no), actualizado |
 | `REFLEXIONES` | id, tema_id, usuario, titulo (antiguo), url, creado, actualizado, texto — las aportaciones |
 | `USUARIOS` | usuario, nombre, password_hash, rol (miembro/admin), estado (pendiente/activo/rechazado/baja), creado, sesion |
+| `CUENTAS` | tema_id, usuario, importe (12,50), pagado (sí/no), actualizado |
 | `CONFIG` | clave, valor: `drive_url` (podcast general), `lugar_defecto`, `hora_defecto`, `maps_url`, `ciudad` |
 
 Se puede editar a mano. La app localiza las columnas por su nombre en la primera fila, así que no las renombres. Las contraseñas se guardan cifradas (scrypt) y nunca en claro. Los cambios hechos a mano tardan hasta 30 segundos en verse.

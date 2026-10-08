@@ -9,6 +9,7 @@ import { logout } from '@/lib/actions/auth'
 import { requireUser } from '@/lib/auth/session'
 import { getAppData } from '@/lib/data'
 import { dayAndMonth, todayInMadrid } from '@/lib/domain/dates'
+import { formatEuros } from '@/lib/domain/money'
 import type { Topic } from '@/lib/domain/model'
 import { ChangePasswordForm } from './ProfileForms'
 
@@ -26,6 +27,10 @@ export default async function ProfilePage() {
     .sort((a, b) => (a.fecha < b.fecha ? 1 : -1))
   const attended = myThursdays.filter((t) => t.fecha < today).length
   const myReflections = data.reflections.filter((r) => r.usuario === me.usuario)
+  const myDebts = data.debts
+    .filter((d) => d.usuario === me.usuario && topicsById.has(d.temaId))
+    .sort((a, b) => (a.temaId < b.temaId ? 1 : -1))
+  const pending = myDebts.filter((d) => !d.pagado).reduce((acc, d) => acc + d.importe, 0)
 
   return (
     <>
@@ -50,6 +55,32 @@ export default async function ProfilePage() {
           <dd className="font-display text-3xl font-semibold tabular-nums">{myReflections.length}</dd>
         </div>
       </dl>
+
+      {myDebts.length > 0 ? (
+        <>
+          <SectionTitle>Mis cuentas</SectionTitle>
+          <div className={`mb-3 rounded-card border p-4 ${pending > 0 ? 'border-terra/30 bg-terra-50' : 'border-ok/30 bg-ok-50'}`}>
+            <p className="text-sm font-semibold text-muted">{pending > 0 ? 'Te falta por pagar' : 'Lo tienes todo pagado'}</p>
+            <p className="font-display text-3xl font-semibold tabular-nums text-cacao">{formatEuros(pending)}</p>
+          </div>
+          <ul className="divide-y divide-line rounded-card border border-line bg-white px-4">
+            {myDebts.map((d) => {
+              const t = topicsById.get(d.temaId)!
+              return (
+                <li key={d.temaId}>
+                  <Link href={`/sesiones/${encodeURIComponent(d.temaId)}`} className="flex items-center gap-3 py-3">
+                    <span className="min-w-0 flex-1 truncate font-semibold">{t.titulo}</span>
+                    <span className="tabular-nums">{formatEuros(d.importe)}</span>
+                    <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${d.pagado ? 'bg-ok-50 text-ok' : 'bg-terra-50 text-terra-700'}`}>
+                      {d.pagado ? 'Pagado' : 'Pendiente'}
+                    </span>
+                  </Link>
+                </li>
+              )
+            })}
+          </ul>
+        </>
+      ) : null}
 
       <SectionTitle>Mis sesiones</SectionTitle>
       {myThursdays.length > 0 ? (

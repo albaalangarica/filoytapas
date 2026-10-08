@@ -8,6 +8,7 @@ import { buildRow } from '@/lib/store/types'
 import { hashPassword, provisionalPassword } from '@/lib/auth/password'
 import { requireAdmin } from '@/lib/auth/session'
 import { newTopicId } from '@/lib/domain/model'
+import { amountToSheet, parseAmount } from '@/lib/domain/money'
 import { firstError, topicSchema } from '@/lib/domain/validation'
 import type { FormState } from './state'
 
@@ -107,4 +108,60 @@ export async function resetPassword(_prev: FormState, formData: FormData): Promi
   const secret = provisionalPassword()
   await updateUser(usuario, { password_hash: hashPassword(secret), sesion: String(user.sesion + 1) })
   return { ok: `Nueva contraseña para ${user.nombre}. Pásasela y que la cambie en su perfil:`, secret }
+}
+
+/**
+ * Guarda lo que debe cada persona de una sesión. El formulario manda `importe:<usuario>` y,
+ * si está marcado, `pagado:<usuario>`. Un importe vacío o 0 quita a esa persona de la cuenta.
+ */
+export async function saveBill(_prev: FormState, formData: FormData): Promise<FormState> {
+  await requireAdmin()
+  const temaId = String(formData.get('temaId') ?? '')
+  const { workbook, data } = await readFresh()
+  if (!data.topics.some((t) => t.id === temaId)) return { error: 'Esta sesión ya no existe.' }
+  const known = new Set(data.users.map((u) => u.usuario))
+
+  const wanted = new Map<string, { importe: number; pagado: boolean }>()
+  for (const [key, raw] of formData.entries()) {
+    if (!key.startsWith('importe:')) continue
+    const usuario = key.slice('importe:'.length)
+    if (!known.has(usuario)) continue
+    const importe = parseAmount(String(raw))
+    if (importe !== null && Number.isNaN(importe)) {
+      const nombre = data.users.find((u) => u.usuario === usuario)?.nombre ?? usuario
+      return { error: `El importe de ${nombre} no es válido. Escríbelo como 12,50.` }
+    }
+    wanted.set(usuario, { importe: importe ?? 0, pagado: formData.get(`pagado:${usuario}`) === 'on' })
+  }
+
+  const now = new Date().toISOString()
+  const existing = data.debts.filter((d) => d.temaId === temaId)
+  const updates: { rowNumber: number; values: string[] }[] = []
+  const clears: number[] = []
+  for (const debt of existing) {
+    const next = wanted.get(debt.usuario)
+    if (!next) continue
+    wanted.delete(debt.usuario)
+    if (next.importe === 0) {
+      clears.push(debt.rowNumber)
+    } else if (next.importe !== debt.importe || next.pagado !== debt.pagado) {
+      const row = workbook.CUENTAS.rows.find((r) => r.rowNumber === debt.rowNumber)
+      updates.push({
+        rowNumber: debt.rowNumber,
+        values: buildRow(workbook.CUENTAS, { importe: amountToSheet(next.importe), pagado: next.pagado ? 'sí' : 'no', actualizado: now }, row?.values),
+      })
+    }
+  }
+  const appends = [...wanted.entries()]
+    .filter(([, v]) => v.importe > 0)
+    .map(([usuario, v]) =>
+      buildRow(workbook.CUENTAS, { tema_id: temaId, usuario, importe: amountToSheet(v.importe), pagado: v.pagado ? 'sí' : 'no', actualizado: now }),
+    )
+
+  const store = getStore()
+  await store.updateMany('CUENTAS', updates)
+  await store.appendMany('CUENTAS', appends)
+  for (const rowNumber of clears) await store.clear('CUENTAS', rowNumber)
+  updateTag(SHEETS_CACHE_TAG)
+  return { ok: 'Cuentas guardadas.' }
 }

@@ -9,6 +9,7 @@ export const SHEETS = {
   REFLEXIONES: ['id', 'tema_id', 'usuario', 'titulo', 'url', 'creado', 'actualizado', 'texto'],
   USUARIOS: ['usuario', 'nombre', 'password_hash', 'rol', 'estado', 'creado', 'sesion'],
   CONFIG: ['clave', 'valor', 'para qué sirve'],
+  CUENTAS: ['tema_id', 'usuario', 'importe', 'pagado', 'actualizado'],
 } as const
 
 export type SheetName = keyof typeof SHEETS
@@ -31,6 +32,10 @@ export interface Store {
   /** `fresh` salta la caché: lo usan las escrituras para trabajar sobre el estado real. */
   read(opts?: { fresh?: boolean }): Promise<Workbook>
   append(sheet: SheetName, values: string[]): Promise<void>
+  /** Varias filas en una sola llamada. */
+  appendMany(sheet: SheetName, rows: string[][]): Promise<void>
+  /** Varias actualizaciones en una sola llamada. */
+  updateMany(sheet: SheetName, updates: { rowNumber: number; values: string[] }[]): Promise<void>
   update(sheet: SheetName, rowNumber: number, values: string[]): Promise<void>
   /** Vacía una fila. No se borran filas para que los números de fila no se desplacen. */
   clear(sheet: SheetName, rowNumber: number): Promise<void>

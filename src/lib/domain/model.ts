@@ -1,5 +1,6 @@
 import { cell, type SheetRow, type SheetTable, type Workbook } from '@/lib/store/types'
 import { madridNow, normalizeDate, normalizeTime } from './dates'
+import { parseAmount } from './money'
 
 /* Tipos de dominio y lectura de las pestañas del Sheet. Funciones puras: fáciles de testear. */
 
@@ -50,6 +51,15 @@ export interface Reflection {
   texto: string
   url: string
   creado: string
+  rowNumber: number
+}
+
+/** Lo que debe cada persona de una sesión (tipo Tricount). Importe en céntimos. */
+export interface Debt {
+  temaId: string
+  usuario: string
+  importe: number
+  pagado: boolean
   rowNumber: number
 }
 
@@ -165,6 +175,16 @@ export function parseReflections(table: SheetTable): Reflection[] {
   }).sort((a, b) => (a.creado < b.creado ? -1 : 1))
 }
 
+export function parseDebts(table: SheetTable): Debt[] {
+  return rows(table, (get, row) => {
+    const temaId = topicId(get('tema_id'))
+    const usuario = normalizeUsername(get('usuario'))
+    const importe = parseAmount(get('importe'))
+    if (!temaId || !usuario || importe === null || Number.isNaN(importe)) return null
+    return { temaId, usuario, importe, pagado: YES.has(get('pagado').toLowerCase()), rowNumber: row.rowNumber }
+  })
+}
+
 export function parseConfig(table: SheetTable): AppConfig {
   const map = new Map<string, string>()
   for (const row of table.rows) map.set(cell(table, row, 'clave').toLowerCase(), cell(table, row, 'valor'))
@@ -182,6 +202,7 @@ export interface AppData {
   users: User[]
   attendance: Attendance[]
   reflections: Reflection[]
+  debts: Debt[]
   config: AppConfig
 }
 
@@ -191,6 +212,8 @@ export function parseWorkbook(wb: Workbook): AppData {
     users: parseUsers(wb.USUARIOS),
     attendance: parseAttendance(wb.ASISTENCIA),
     reflections: parseReflections(wb.REFLEXIONES),
+    // Si alguien borra la pestaña CUENTAS, la app sigue funcionando sin cuentas.
+    debts: wb.CUENTAS ? parseDebts(wb.CUENTAS) : [],
     config: parseConfig(wb.CONFIG),
   }
 }

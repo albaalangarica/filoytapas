@@ -85,3 +85,21 @@ describe('lectura del Sheet', () => {
     expect(buildRow(table, { a: '1', b: '2', nope: 'x' }, ['', '', 'nota'])).toEqual(['2', '1', 'nota'])
   })
 })
+
+describe('cuentas', () => {
+  it('lee importes en formato español y descarta los mal escritos', async () => {
+    const { parseDebts } = await import('@/lib/domain/model')
+    const debts = parseDebts(
+      toTable([
+        ['tema_id', 'usuario', 'importe', 'pagado'],
+        ['2026-10-01', 'Alba', '12,50', 'sí'],
+        ['2026-10-01', 'juanma', '8.5 €', ''],
+        ['2026-10-01', 'pedro', 'mucho', 'no'],
+      ]),
+    )
+    expect(debts.map((d) => [d.usuario, d.importe, d.pagado])).toEqual([
+      ['alba', 1250, true],
+      ['juanma', 850, false],
+    ])
+  })
+})

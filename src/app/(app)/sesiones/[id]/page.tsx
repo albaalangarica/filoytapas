@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Attendees } from '@/components/Attendees'
+import { BillForm } from '@/components/BillForm'
+import { MyDebt } from '@/components/MyDebt'
 import { Icon } from '@/components/Icon'
 import { Questions } from '@/components/Questions'
 import { AddReflection } from '@/components/ReflectionForm'
@@ -18,10 +20,11 @@ import { summarize } from '@/lib/view'
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ tab?: string }> }
 
-const TABS = [
+const ALL_TABS = [
   { id: 'tema', label: 'Tema' },
   { id: 'asistentes', label: 'Asistentes' },
   { id: 'aportaciones', label: 'Aportaciones' },
+  { id: 'cuentas', label: 'Cuentas' },
 ] as const
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -40,9 +43,14 @@ export default async function SessionPage({ params, searchParams }: Props) {
 
   const today = todayInMadrid()
   const summary = summarize(data, topic, me.usuario)
+  const isAdminUser = me.rol === 'admin'
+  // La pestaña de cuentas solo la ven los admins; cada miembro ve su parte en «Tema».
+  const TABS = ALL_TABS.filter((t) => t.id !== 'cuentas' || isAdminUser)
   const tab = TABS.find((t) => t.id === tabParam || (tabParam === 'reflexiones' && t.id === 'aportaciones'))?.id ?? 'tema'
   const isAdmin = me.rol === 'admin'
-  const counts = { tema: null, asistentes: summary.going.length, aportaciones: summary.reflections.length }
+  const topicDebts = data.debts.filter((d) => d.temaId === topic.id)
+  const myDebt = topicDebts.find((d) => d.usuario === me.usuario)
+  const counts = { tema: null, asistentes: summary.going.length, aportaciones: summary.reflections.length, cuentas: null }
   const paragraphs = topic.introduccion.split(/\n\s*\n/).filter(Boolean)
   const podcastUrl = topic.materialesUrl || data.config.driveUrl
   const canContribute = isOpenForContributions(topic)
@@ -67,7 +75,7 @@ export default async function SessionPage({ params, searchParams }: Props) {
       </header>
 
       <nav aria-label="Secciones" className="sticky top-[calc(4.75rem+env(safe-area-inset-top))] z-10 -mx-4 mt-5 border-b border-line bg-paper/95 px-4 backdrop-blur">
-        <ul className="flex gap-1">
+        <ul className="-mb-px flex overflow-x-auto [scrollbar-width:none]">
           {TABS.map((t) => (
             <li key={t.id}>
               <Link
@@ -76,7 +84,7 @@ export default async function SessionPage({ params, searchParams }: Props) {
                 scroll={false}
                 aria-current={tab === t.id ? 'page' : undefined}
                 className={cn(
-                  'inline-flex items-center gap-1.5 border-b-[3px] px-3 py-3 text-sm font-bold',
+                  'inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap border-b-[3px] px-2.5 py-3 text-sm font-bold',
                   tab === t.id ? 'border-terra text-ink' : 'border-transparent text-muted',
                 )}
               >
@@ -93,6 +101,7 @@ export default async function SessionPage({ params, searchParams }: Props) {
       <div className="pt-6">
         {tab === 'tema' ? (
           <div className="flex flex-col gap-6">
+            {myDebt ? <MyDebt importe={myDebt.importe} pagado={myDebt.pagado} /> : null}
             {paragraphs.length > 0 ? (
               <div className="flex flex-col gap-3 text-[1.05rem] leading-relaxed">
                 {paragraphs.map((p, i) => (
@@ -128,6 +137,25 @@ export default async function SessionPage({ params, searchParams }: Props) {
               ) : null}
             </div>
           </div>
+        ) : null}
+
+        {tab === 'cuentas' && isAdmin ? (
+          <BillForm
+            temaId={topic.id}
+            people={data.users
+              .filter((u) => u.estado === 'activo' || topicDebts.some((d) => d.usuario === u.usuario))
+              .map((u) => {
+                const debt = topicDebts.find((d) => d.usuario === u.usuario)
+                return {
+                  usuario: u.usuario,
+                  nombre: u.nombre,
+                  went: summary.going.some((g) => g.usuario === u.usuario),
+                  importe: debt?.importe ?? null,
+                  pagado: debt?.pagado ?? false,
+                }
+              })
+              .sort((a, b) => Number(b.went) - Number(a.went) || a.nombre.localeCompare(b.nombre, 'es'))}
+          />
         ) : null}
 
         {tab === 'asistentes' ? <Attendees going={summary.going} notGoing={summary.notGoing} /> : null}

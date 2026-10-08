@@ -96,6 +96,30 @@ export const googleStore: Store = {
     })
   },
 
+  async appendMany(sheet: SheetName, rows: string[][]) {
+    if (rows.length === 0) return
+    await call(sheetUrl(`/values/${encodeURIComponent(`${sheet}!A1`)}:append`, { valueInputOption: 'RAW', insertDataOption: 'INSERT_ROWS' }), {
+      method: 'POST',
+      body: JSON.stringify({ values: rows }),
+      cache: 'no-store',
+    })
+  },
+
+  async updateMany(sheet: SheetName, updates: { rowNumber: number; values: string[] }[]) {
+    if (updates.length === 0) return
+    await call(sheetUrl('/values:batchUpdate'), {
+      method: 'POST',
+      body: JSON.stringify({
+        valueInputOption: 'RAW',
+        data: updates.map((u) => ({
+          range: `${sheet}!A${u.rowNumber}:${columnLetter(u.values.length)}${u.rowNumber}`,
+          values: [u.values],
+        })),
+      }),
+      cache: 'no-store',
+    })
+  },
+
   async update(sheet: SheetName, rowNumber: number, values: string[]) {
     const range = `${sheet}!A${rowNumber}:${columnLetter(values.length)}${rowNumber}`
     await call(sheetUrl(`/values/${encodeURIComponent(range)}`, { valueInputOption: 'RAW' }), {
