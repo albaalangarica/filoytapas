@@ -19,9 +19,28 @@ function env(name: string): string {
   return (process.env[name] ?? '').trim().replace(/^["']+|["']+$/g, '').trim()
 }
 
-/** La clave privada tal como la espera Node, aunque se haya pegado con "\n" literales o comillas. */
+/**
+ * Si en GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY se pega el archivo JSON entero de la cuenta de servicio
+ * (lo más fácil: abrirlo, seleccionar todo y copiar), se leen de él la clave y el email.
+ */
+function serviceAccountJson(): { private_key?: string; client_email?: string } | null {
+  const raw = (process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY ?? '').trim()
+  if (!raw.startsWith('{')) return null
+  try {
+    return JSON.parse(raw) as { private_key?: string; client_email?: string }
+  } catch {
+    return null
+  }
+}
+
+/** La clave privada tal como la espera Node, aunque se haya pegado con "\n" literales, comillas o dentro del JSON. */
 function privateKey(): string {
-  return env('GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY').replace(/\\n/g, '\n').replace(/\r/g, '')
+  const fromJson = serviceAccountJson()?.private_key
+  return (fromJson ?? env('GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY')).replace(/\\n/g, '\n').replace(/\r/g, '')
+}
+
+function clientEmail(): string {
+  return serviceAccountJson()?.client_email?.trim() || env('GOOGLE_SERVICE_ACCOUNT_EMAIL')
 }
 
 /**
@@ -34,13 +53,15 @@ export function configProblems(): string[] {
   const id = env('GOOGLE_SHEETS_SPREADSHEET_ID')
   if (!id) problems.push('Falta GOOGLE_SHEETS_SPREADSHEET_ID.')
   else if (id.includes('/')) problems.push('GOOGLE_SHEETS_SPREADSHEET_ID debe ser solo el ID, no la URL entera.')
-  const email = env('GOOGLE_SERVICE_ACCOUNT_EMAIL')
+  const email = clientEmail()
   if (!email) problems.push('Falta GOOGLE_SERVICE_ACCOUNT_EMAIL.')
   else if (!email.endsWith('.iam.gserviceaccount.com')) problems.push('GOOGLE_SERVICE_ACCOUNT_EMAIL no parece el email de una cuenta de servicio.')
   const key = privateKey()
   if (!key) problems.push('Falta GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY.')
-  else if (!key.includes('-----BEGIN PRIVATE KEY-----') || !key.includes('-----END PRIVATE KEY-----')) {
-    problems.push('GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY está incompleta: debe ir de -----BEGIN PRIVATE KEY----- a -----END PRIVATE KEY-----.')
+  else if ((process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY ?? '').trim().startsWith('{') && !serviceAccountJson()) {
+    problems.push('GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY parece el archivo JSON, pero está incompleto: ábrelo, selecciona todo (Ctrl+A) y pégalo entero.')
+  } else if (!key.includes('-----BEGIN PRIVATE KEY-----') || !key.includes('-----END PRIVATE KEY-----')) {
+    problems.push('GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY está incompleta. Lo más fácil: abre el archivo JSON de la clave, selecciona todo (Ctrl+A), cópialo y pégalo entero como valor.')
   }
   const secret = env('SESSION_SECRET')
   if (!secret) problems.push('Falta SESSION_SECRET.')
@@ -62,7 +83,7 @@ export function sheetsEnv() {
   if (problems.length > 0) throw new ConfigError(problems.join(' '))
   return sheetsSchema.parse({
     spreadsheetId: env('GOOGLE_SHEETS_SPREADSHEET_ID'),
-    clientEmail: env('GOOGLE_SERVICE_ACCOUNT_EMAIL'),
+    clientEmail: clientEmail(),
     privateKey: privateKey(),
     revalidateSeconds: process.env.SHEETS_REVALIDATE_SECONDS || undefined,
   })

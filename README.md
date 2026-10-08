@@ -51,7 +51,7 @@ Se puede editar a mano. La app localiza las columnas por su nombre en la primera
 |---|---|
 | `GOOGLE_SHEETS_SPREADSHEET_ID` | El trozo de la URL del Sheet entre `/d/` y `/edit` |
 | `GOOGLE_SERVICE_ACCOUNT_EMAIL` | `client_email` del JSON |
-| `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY` | `private_key` del JSON, entero, con `-----BEGIN PRIVATE KEY-----` |
+| `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY` | Lo más fácil: el archivo JSON entero (ábrelo, Ctrl+A, Ctrl+C y pega). También vale solo el `private_key` |
 | `SESSION_SECRET` | Una cadena aleatoria larga (mínimo 32 caracteres) |
 
 Para generar `SESSION_SECRET`: `node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"`, o cualquier frase larga sin sentido.
