@@ -4,10 +4,10 @@ import { Avatar } from '@/components/Avatar'
 import { Icon } from '@/components/Icon'
 import { SubmitButton } from '@/components/SubmitButton'
 import { Empty, PageTitle, buttonStyles, cn } from '@/components/ui'
-import { reviewRequest, setActive, setRole } from '@/lib/actions/admin'
+import { reviewRequest, setActive, setProposalState, setRole } from '@/lib/actions/admin'
 import { requireAdmin } from '@/lib/auth/session'
 import { getAppData } from '@/lib/data'
-import { dayAndMonth } from '@/lib/domain/dates'
+import { dayAndMonth, todayInMadrid } from '@/lib/domain/dates'
 import type { User } from '@/lib/domain/model'
 import { formatEuros } from '@/lib/domain/money'
 import { ResetPasswordButton } from './AdminForms'
@@ -18,6 +18,7 @@ const TABS = [
   { id: 'solicitudes', label: 'Solicitudes' },
   { id: 'miembros', label: 'Miembros' },
   { id: 'temas', label: 'Sesiones' },
+  { id: 'propuestas', label: 'Propuestas' },
   { id: 'cuentas', label: 'Cuentas' },
 ] as const
 
@@ -26,6 +27,9 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   const { tab: tabParam } = await searchParams
   const data = await getAppData()
   const pending = data.users.filter((u) => u.estado === 'pendiente')
+  const sessionsHeld = data.topics.filter((t) => t.publicado && t.fecha <= todayInMadrid()).length
+  const newProposals = data.proposals.filter((p) => p.estado === 'nueva').length
+  const owed = data.debts.filter((d) => !d.pagado).reduce((acc, d) => acc + d.importe, 0)
   const tab = TABS.find((t) => t.id === tabParam)?.id ?? (pending.length > 0 ? 'solicitudes' : 'temas')
   const members = data.users
     .filter((u) => u.estado === 'activo' || u.estado === 'baja')
@@ -34,23 +38,38 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   return (
     <>
       <PageTitle eyebrow="Solo Martina y Juanma" title="Admin" />
+      <div className="mb-4 grid grid-cols-2 gap-3">
+        <div className="rounded-card bg-cobalt-50 p-4">
+          <p className="text-xs font-bold uppercase tracking-[0.12em] text-cobalt">Sesiones</p>
+          <p className="font-display text-3xl font-extrabold tabular-nums">{sessionsHeld}</p>
+        </div>
+        <Link href="?tab=cuentas" replace className={`rounded-card p-4 ${owed > 0 ? 'bg-mandarin-50' : 'bg-ok-50'}`}>
+          <p className={`text-xs font-bold uppercase tracking-[0.12em] ${owed > 0 ? 'text-mandarin-700' : 'text-ok'}`}>
+            {owed > 0 ? 'Os deben' : 'Cuentas al día'}
+          </p>
+          <p className="font-display text-3xl font-extrabold tabular-nums">{formatEuros(owed)}</p>
+        </Link>
+      </div>
       <Link href="/admin/temas/nuevo" className={`${buttonStyles.primary} w-full`}>
         <Icon name="plus" /> Nueva sesión
       </Link>
 
       <nav aria-label="Secciones de admin" className="-mx-4 mt-6 border-b border-line px-4">
-        <ul className="flex gap-1">
+        <ul className="-mb-px flex overflow-x-auto [scrollbar-width:none]">
           {TABS.map((t) => (
             <li key={t.id}>
               <Link
                 href={`?tab=${t.id}`}
                 replace
                 aria-current={tab === t.id ? 'page' : undefined}
-                className={cn('inline-flex items-center gap-1.5 border-b-[3px] px-3 py-3 text-sm font-bold', tab === t.id ? 'border-mandarin' : 'border-transparent text-muted')}
+                className={cn('inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap border-b-[3px] px-2.5 py-3 text-sm font-bold', tab === t.id ? 'border-mandarin' : 'border-transparent text-muted')}
               >
                 {t.label}
                 {t.id === 'solicitudes' && pending.length > 0 ? (
                   <span className="rounded-full bg-mandarin px-1.5 text-xs text-white">{pending.length}</span>
+                ) : null}
+                {t.id === 'propuestas' && newProposals > 0 ? (
+                  <span className="rounded-full bg-mandarin px-1.5 text-xs text-white">{newProposals}</span>
                 ) : null}
               </Link>
             </li>
@@ -97,6 +116,8 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
         ) : null}
 
         {tab === 'cuentas' ? <PendingSummary data={data} /> : null}
+
+        {tab === 'propuestas' ? <Proposals data={data} /> : null}
 
         {tab === 'temas' ? (
           <ul className="flex flex-col gap-2">
@@ -210,5 +231,48 @@ function PendingSummary({ data }: { data: Awaited<ReturnType<typeof getAppData>>
         ))}
       </ul>
     </div>
+  )
+}
+
+/** Temas propuestos por los miembros: los nuevos primero. */
+function Proposals({ data }: { data: Awaited<ReturnType<typeof getAppData>> }) {
+  const names = new Map(data.users.map((u) => [u.usuario, u.nombre]))
+  const order = { nueva: 0, archivada: 1, usada: 2 } as const
+  const list = [...data.proposals].sort((a, b) => order[a.estado] - order[b.estado])
+  if (list.length === 0) {
+    return <Empty title="Aún no hay propuestas">Los miembros pueden proponer temas desde su perfil o desde Sesiones.</Empty>
+  }
+  return (
+    <ul className="flex flex-col gap-3">
+      {list.map((p) => (
+        <li key={p.id} className={cn('rounded-card border border-line bg-white p-4', p.estado !== 'nueva' && 'opacity-70')}>
+          <div className="flex items-start gap-3">
+            <Avatar usuario={p.usuario} nombre={names.get(p.usuario) ?? p.usuario} size="sm" />
+            <div className="min-w-0 flex-1">
+              <p className="font-display text-lg font-extrabold leading-tight text-navy">{p.titulo}</p>
+              <p className="text-xs text-muted">
+                {names.get(p.usuario) ?? p.usuario}
+                {p.estado === 'usada' ? ' · Ya es sesión' : p.estado === 'archivada' ? ' · Archivada' : ''}
+              </p>
+            </div>
+          </div>
+          {p.descripcion ? <p className="mt-2 whitespace-pre-line text-sm leading-relaxed">{p.descripcion}</p> : null}
+          <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-line pt-3 text-sm font-semibold">
+            {p.estado !== 'usada' ? (
+              <Link href={`/admin/temas/nuevo?propuesta=${encodeURIComponent(p.id)}`} className="text-mandarin-700">
+                Crear sesión con este tema →
+              </Link>
+            ) : null}
+            <form action={setProposalState}>
+              <input type="hidden" name="id" value={p.id} />
+              <input type="hidden" name="estado" value={p.estado === 'nueva' ? 'archivada' : 'nueva'} />
+              <button type="submit" className="text-cobalt-700">
+                {p.estado === 'nueva' ? 'Archivar' : 'Volver a nuevas'}
+              </button>
+            </form>
+          </div>
+        </li>
+      ))}
+    </ul>
   )
 }

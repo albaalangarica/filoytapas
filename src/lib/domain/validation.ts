@@ -25,6 +25,11 @@ export const reflectionSchema = z.object({
     .refine((v) => v === '' || (/^https?:\/\//i.test(v) && URL.canParse(v)), 'El enlace debe empezar por https://'),
 })
 
+export const proposalSchema = z.object({
+  titulo: z.string().trim().min(3, 'Ponle un título al tema.').max(140, 'El título es demasiado largo (máx. 140).'),
+  descripcion: z.string().trim().max(2000, 'Es demasiado largo (máx. 2000 caracteres).'),
+})
+
 const optionalUrl = z
   .string()
   .trim()

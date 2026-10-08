@@ -75,6 +75,10 @@ function seed(): Raw {
       ['2026-10-01', 'juanma', '12,50', 'no', now],
       ['2026-10-01', 'alba', '12,50', 'no', now],
     ],
+    PROPUESTAS: [
+      [...SHEETS.PROPUESTAS],
+      ['demo-p1', 'alba', 'Inteligencia artificial: ¿quién es responsable?', 'Si una IA decide mal, ¿la culpa es de quien la programa, de quien la usa o de nadie?', 'nueva', now],
+    ],
     CONFIG: [
       [...SHEETS.CONFIG],
       ['drive_url', 'https://drive.google.com/', 'Enlace a la carpeta de Drive con los materiales'],

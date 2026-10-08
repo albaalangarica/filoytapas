@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Icon } from '@/components/Icon'
+import { ProposeTopic } from '@/components/ProposeTopic'
 import { TopicCard } from '@/components/TopicCard'
 import { Empty, PageTitle, SectionTitle, buttonStyles } from '@/components/ui'
 import { requireUser } from '@/lib/auth/session'
@@ -56,6 +57,12 @@ export default async function SessionsPage() {
       ) : (
         <Empty title="Aún no hay sesiones anteriores">Aquí irán apareciendo todos los temas.</Empty>
       )}
+
+      {!isAdmin ? (
+        <div className="mt-8">
+          <ProposeTopic />
+        </div>
+      ) : null}
     </>
   )
 }

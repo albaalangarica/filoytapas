@@ -10,6 +10,7 @@ export const SHEETS = {
   USUARIOS: ['usuario', 'nombre', 'password_hash', 'rol', 'estado', 'creado', 'sesion'],
   CONFIG: ['clave', 'valor', 'para qué sirve'],
   CUENTAS: ['tema_id', 'usuario', 'importe', 'pagado', 'actualizado'],
+  PROPUESTAS: ['id', 'usuario', 'titulo', 'descripcion', 'estado', 'creado'],
 } as const
 
 export type SheetName = keyof typeof SHEETS

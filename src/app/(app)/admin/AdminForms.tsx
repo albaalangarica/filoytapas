@@ -41,6 +41,8 @@ export function ResetPasswordButton({ usuario }: { usuario: string }) {
 
 export interface TopicFormValues {
   id?: string
+  /** Si la sesión sale de una propuesta de un miembro. */
+  propuesta?: string
   titulo: string
   cita: string
   introduccion: string
@@ -59,6 +61,7 @@ export function TopicForm({ initial }: { initial: TopicFormValues }) {
   return (
     <form action={action} className="flex flex-col gap-5">
       {initial.id ? <input type="hidden" name="id" value={initial.id} /> : null}
+      {initial.propuesta ? <input type="hidden" name="propuesta" value={initial.propuesta} /> : null}
       <Field label="Título" htmlFor="t-titulo" hint="Corto y con gancho. Ej.: PODER: ¿QUIÉN MANDA REALMENTE?">
         <input id="t-titulo" name="titulo" required maxLength={140} defaultValue={initial.titulo} className={`${inputStyles} font-display font-bold`} />
       </Field>

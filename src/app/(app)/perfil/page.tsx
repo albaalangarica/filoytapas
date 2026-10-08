@@ -11,6 +11,8 @@ import { getAppData } from '@/lib/data'
 import { dayAndMonth, todayInMadrid } from '@/lib/domain/dates'
 import { formatEuros } from '@/lib/domain/money'
 import type { Topic } from '@/lib/domain/model'
+import { MyProposals } from '@/components/MyProposals'
+import { ProposeTopic } from '@/components/ProposeTopic'
 import { ChangePasswordForm } from './ProfileForms'
 
 export const metadata: Metadata = { title: 'Perfil' }
@@ -27,6 +29,7 @@ export default async function ProfilePage() {
     .sort((a, b) => (a.fecha < b.fecha ? 1 : -1))
   const attended = myThursdays.filter((t) => t.fecha < today).length
   const myReflections = data.reflections.filter((r) => r.usuario === me.usuario)
+  const myProposals = data.proposals.filter((p) => p.usuario === me.usuario)
   const myDebts = data.debts
     .filter((d) => d.usuario === me.usuario && topicsById.has(d.temaId))
     .sort((a, b) => (a.temaId < b.temaId ? 1 : -1))
@@ -46,23 +49,33 @@ export default async function ProfilePage() {
       </header>
 
       <dl className="mt-4 grid grid-cols-2 gap-3">
-        <div className="rounded-card bg-mandarin-50 p-4">
-          <dt className="text-xs font-bold uppercase tracking-[0.12em] text-mandarin-700">Sesiones en la mesa</dt>
+        <div className="rounded-card bg-cobalt-50 p-4">
+          <dt className="text-xs font-bold uppercase tracking-[0.12em] text-cobalt">Sesiones</dt>
           <dd className="font-display text-3xl font-extrabold tabular-nums">{attended}</dd>
         </div>
-        <div className="rounded-card bg-cobalt-50 p-4">
-          <dt className="text-xs font-bold uppercase tracking-[0.12em] text-cobalt">Aportaciones</dt>
-          <dd className="font-display text-3xl font-extrabold tabular-nums">{myReflections.length}</dd>
+        <div className={`rounded-card p-4 ${pending > 0 ? 'bg-mandarin-50' : 'bg-ok-50'}`}>
+          <dt className={`text-xs font-bold uppercase tracking-[0.12em] ${pending > 0 ? 'text-mandarin-700' : 'text-ok'}`}>
+            {pending > 0 ? 'Debes' : 'Cuentas al día'}
+          </dt>
+          <dd className="font-display text-3xl font-extrabold tabular-nums">{formatEuros(pending)}</dd>
         </div>
       </dl>
+
+      {me.rol !== 'admin' ? (
+        <div className="mt-6 flex flex-col gap-3">
+          <ProposeTopic />
+          {myProposals.length > 0 ? (
+            <>
+              <SectionTitle>Mis propuestas</SectionTitle>
+              <MyProposals proposals={myProposals} />
+            </>
+          ) : null}
+        </div>
+      ) : null}
 
       {myDebts.length > 0 ? (
         <>
           <SectionTitle>Mis cuentas</SectionTitle>
-          <div className={`mb-3 rounded-card border p-4 ${pending > 0 ? 'border-mandarin/30 bg-mandarin-50' : 'border-ok/30 bg-ok-50'}`}>
-            <p className="text-sm font-semibold text-muted">{pending > 0 ? 'Te falta por pagar' : 'Lo tienes todo pagado'}</p>
-            <p className="font-display text-3xl font-extrabold tabular-nums text-navy">{formatEuros(pending)}</p>
-          </div>
           <ul className="divide-y divide-line rounded-card border border-line bg-white px-4">
             {myDebts.map((d) => {
               const t = topicsById.get(d.temaId)!

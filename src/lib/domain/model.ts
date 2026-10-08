@@ -63,6 +63,17 @@ export interface Debt {
   rowNumber: number
 }
 
+/** Tema que propone un miembro para una próxima sesión. */
+export interface Proposal {
+  id: string
+  usuario: string
+  titulo: string
+  descripcion: string
+  estado: 'nueva' | 'usada' | 'archivada'
+  creado: string
+  rowNumber: number
+}
+
 export interface AppConfig {
   driveUrl: string
   lugarDefecto: string
@@ -185,6 +196,23 @@ export function parseDebts(table: SheetTable): Debt[] {
   })
 }
 
+export function parseProposals(table: SheetTable): Proposal[] {
+  return rows(table, (get, row) => {
+    if (!get('id') || !get('titulo')) return null
+    const raw = get('estado').toLowerCase()
+    const estado: Proposal['estado'] = raw === 'usada' || raw === 'archivada' ? raw : 'nueva'
+    return {
+      id: get('id'),
+      usuario: normalizeUsername(get('usuario')),
+      titulo: get('titulo'),
+      descripcion: get('descripcion'),
+      estado,
+      creado: get('creado'),
+      rowNumber: row.rowNumber,
+    }
+  }).sort((a, b) => (a.creado < b.creado ? 1 : -1))
+}
+
 export function parseConfig(table: SheetTable): AppConfig {
   const map = new Map<string, string>()
   for (const row of table.rows) map.set(cell(table, row, 'clave').toLowerCase(), cell(table, row, 'valor'))
@@ -203,6 +231,7 @@ export interface AppData {
   attendance: Attendance[]
   reflections: Reflection[]
   debts: Debt[]
+  proposals: Proposal[]
   config: AppConfig
 }
 
@@ -214,6 +243,7 @@ export function parseWorkbook(wb: Workbook): AppData {
     reflections: parseReflections(wb.REFLEXIONES),
     // Si alguien borra la pestaña CUENTAS, la app sigue funcionando sin cuentas.
     debts: wb.CUENTAS ? parseDebts(wb.CUENTAS) : [],
+    proposals: wb.PROPUESTAS ? parseProposals(wb.PROPUESTAS) : [],
     config: parseConfig(wb.CONFIG),
   }
 }

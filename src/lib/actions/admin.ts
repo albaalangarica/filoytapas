@@ -56,6 +56,12 @@ export async function saveTopic(_prev: FormState, formData: FormData): Promise<F
     id = newTopicId(t.fecha, data.topics.map((x) => x.id))
     await getStore().append('TEMAS', buildRow(workbook.TEMAS, { id, ...values, autor: me.nombre }))
   }
+  // Si la sesión sale de una propuesta, la marcamos como usada.
+  const fromProposal = data.proposals.find((x) => x.id === String(formData.get('propuesta') ?? ''))
+  if (fromProposal) {
+    const row = workbook.PROPUESTAS.rows.find((r) => r.rowNumber === fromProposal.rowNumber)
+    await getStore().update('PROPUESTAS', fromProposal.rowNumber, buildRow(workbook.PROPUESTAS, { estado: 'usada' }, row?.values))
+  }
   updateTag(SHEETS_CACHE_TAG)
   redirect(`/sesiones/${encodeURIComponent(id)}`)
 }
@@ -164,4 +170,17 @@ export async function saveBill(_prev: FormState, formData: FormData): Promise<Fo
   for (const rowNumber of clears) await store.clear('CUENTAS', rowNumber)
   updateTag(SHEETS_CACHE_TAG)
   return { ok: 'Cuentas guardadas.' }
+}
+
+export async function setProposalState(formData: FormData): Promise<void> {
+  await requireAdmin()
+  const id = String(formData.get('id') ?? '')
+  const estado = formData.get('estado')
+  if (estado !== 'nueva' && estado !== 'usada' && estado !== 'archivada') return
+  const { workbook, data } = await readFresh()
+  const proposal = data.proposals.find((p) => p.id === id)
+  if (!proposal) return
+  const row = workbook.PROPUESTAS.rows.find((r) => r.rowNumber === proposal.rowNumber)
+  await getStore().update('PROPUESTAS', proposal.rowNumber, buildRow(workbook.PROPUESTAS, { estado }, row?.values))
+  updateTag(SHEETS_CACHE_TAG)
 }

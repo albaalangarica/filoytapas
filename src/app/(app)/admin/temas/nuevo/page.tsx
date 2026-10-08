@@ -7,17 +7,20 @@ import { TopicForm } from '../../AdminForms'
 
 export const metadata: Metadata = { title: 'Nueva sesión' }
 
-export default async function NewTopicPage() {
+export default async function NewTopicPage({ searchParams }: { searchParams: Promise<{ propuesta?: string }> }) {
   await requireAdmin()
-  const { config } = await getAppData()
+  const { config, proposals } = await getAppData()
+  const { propuesta } = await searchParams
+  const proposal = proposals.find((p) => p.id === propuesta)
   return (
     <>
       <PageTitle eyebrow="Admin" title="Nueva sesión" />
       <TopicForm
         initial={{
-          titulo: '',
+          propuesta: proposal?.id,
+          titulo: proposal?.titulo.toUpperCase() ?? '',
           cita: '',
-          introduccion: '',
+          introduccion: proposal?.descripcion ?? '',
           preguntas: '',
           fecha: nextThursday(todayInMadrid()),
           hora: config.horaDefecto,

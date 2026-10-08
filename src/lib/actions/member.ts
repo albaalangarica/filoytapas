@@ -8,7 +8,7 @@ import { buildRow } from '@/lib/store/types'
 import { requireUser } from '@/lib/auth/session'
 import { todayInMadrid } from '@/lib/domain/dates'
 import { isOpenForContributions, isOpenForRsvp } from '@/lib/domain/model'
-import { firstError, reflectionSchema } from '@/lib/domain/validation'
+import { firstError, proposalSchema, reflectionSchema } from '@/lib/domain/validation'
 import type { FormState } from './state'
 
 /* Acciones de cualquier miembro: confirmar asistencia y gestionar sus aportaciones. */
@@ -92,4 +92,24 @@ export async function deleteReflection(formData: FormData): Promise<void> {
   if (reflection.usuario !== me.usuario && me.rol !== 'admin') return
   await getStore().clear('REFLEXIONES', reflection.rowNumber)
   updateTag(SHEETS_CACHE_TAG)
+}
+
+export async function proposeTopic(_prev: FormState, formData: FormData): Promise<FormState> {
+  const me = await requireUser()
+  const parsed = proposalSchema.safeParse({ titulo: formData.get('titulo'), descripcion: formData.get('descripcion') ?? '' })
+  if (!parsed.success) return { error: firstError(parsed.error) }
+  const { workbook } = await readFresh()
+  await getStore().append(
+    'PROPUESTAS',
+    buildRow(workbook.PROPUESTAS, {
+      id: randomUUID().slice(0, 8),
+      usuario: me.usuario,
+      titulo: parsed.data.titulo,
+      descripcion: parsed.data.descripcion,
+      estado: 'nueva',
+      creado: new Date().toISOString(),
+    }),
+  )
+  updateTag(SHEETS_CACHE_TAG)
+  return { ok: '¡Gracias! Martina y Juanma verán tu propuesta.' }
 }
