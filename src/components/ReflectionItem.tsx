@@ -49,7 +49,7 @@ export function ReflectionItem({
               href={url}
               target="_blank"
               rel="noopener noreferrer nofollow"
-              className="mt-3 inline-flex max-w-full items-center gap-1.5 rounded-full bg-mist px-3 py-1.5 text-sm font-semibold text-terra-700 hover:bg-terra-50"
+              className="mt-3 inline-flex max-w-full items-center gap-1.5 rounded-full bg-mist px-3 py-1.5 text-sm font-semibold text-mandarin-700 hover:bg-mandarin-50"
             >
               <Icon name="external" className="size-4 shrink-0" />
               <span className="truncate">{host || 'Abrir enlace'}</span>
@@ -69,7 +69,7 @@ export function ReflectionItem({
           ) : canEdit || canDelete ? (
             <div className="mt-3 flex gap-4 text-sm font-semibold">
               {canEdit ? (
-                <button type="button" onClick={() => setMode('edit')} className="flex items-center gap-1 text-oliva-700">
+                <button type="button" onClick={() => setMode('edit')} className="flex items-center gap-1 text-cobalt-700">
                   <Icon name="edit" className="size-4" /> Editar
                 </button>
               ) : null}

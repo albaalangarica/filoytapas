@@ -19,7 +19,7 @@ export function ResetPasswordButton({ usuario }: { usuario: string }) {
   }
   if (!confirm) {
     return (
-      <button type="button" onClick={() => setConfirm(true)} className="text-sm font-semibold text-oliva">
+      <button type="button" onClick={() => setConfirm(true)} className="text-sm font-semibold text-cobalt">
         Resetear contraseña
       </button>
     )
@@ -89,7 +89,7 @@ export function TopicForm({ initial }: { initial: TopicFormValues }) {
         <input id="t-materiales" name="materiales_url" type="url" defaultValue={initial.materiales_url} className={inputStyles} placeholder="https://drive.google.com/…" />
       </Field>
       <label className="flex items-center gap-3 rounded-2xl bg-mist p-4 font-semibold">
-        <input type="checkbox" name="publicado" defaultChecked={initial.publicado} className="size-5 accent-terra" />
+        <input type="checkbox" name="publicado" defaultChecked={initial.publicado} className="size-5 accent-mandarin" />
         Publicar ya (si no, se guarda como borrador que solo veis los admins)
       </label>
       {state.error ? <Notice kind="error">{state.error}</Notice> : null}

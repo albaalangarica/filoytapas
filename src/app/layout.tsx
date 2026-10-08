@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import '@fontsource-variable/fraunces'
-import '@fontsource-variable/fraunces/wght-italic.css'
+import '@fontsource-variable/bricolage-grotesque'
 import '@fontsource-variable/figtree'
 import './globals.css'
 import { ServiceWorkerRegister } from '@/components/ServiceWorkerRegister'
@@ -18,7 +17,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#fdf9f1',
+  themeColor: '#fbfcff',
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',

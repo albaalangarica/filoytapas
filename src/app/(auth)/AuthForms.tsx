@@ -23,13 +23,13 @@ export function LoginForm({ next, demo }: { next: string; demo: boolean }) {
       <SubmitButton pendingText="Entrando…">Entrar</SubmitButton>
       <p className="text-center text-sm text-muted">
         ¿Primera vez?{' '}
-        <Link href="/solicitar" className="font-bold text-oliva">
+        <Link href="/solicitar" className="font-bold text-cobalt">
           Solicitar acceso
         </Link>
       </p>
       <p className="text-center text-xs text-muted">¿Has olvidado la contraseña? Pide a Martina o Juanma una nueva.</p>
       {demo ? (
-        <p className="rounded-xl bg-terra-50 px-3 py-2 text-center text-xs text-terra-700">
+        <p className="rounded-xl bg-mandarin-50 px-3 py-2 text-center text-xs text-mandarin-700">
           Modo demo · usuario <b>martina</b> (admin) o <b>alba</b> · contraseña <b>filoytapas</b>
         </p>
       ) : null}
@@ -44,7 +44,7 @@ export function RequestAccessForm() {
       <div className="flex flex-col gap-4">
         <h1 className="text-2xl font-semibold">¡Hecho! 🍻</h1>
         <Notice kind="ok">{state.ok}</Notice>
-        <Link href="/entrar" className="text-center font-bold text-oliva">
+        <Link href="/entrar" className="text-center font-bold text-cobalt">
           Volver a entrar
         </Link>
       </div>
@@ -70,7 +70,7 @@ export function RequestAccessForm() {
       <SubmitButton pendingText="Enviando…">Enviar solicitud</SubmitButton>
       <p className="text-center text-sm text-muted">
         ¿Ya tienes cuenta?{' '}
-        <Link href="/entrar" className="font-bold text-oliva">
+        <Link href="/entrar" className="font-bold text-cobalt">
           Entrar
         </Link>
       </p>

@@ -56,7 +56,7 @@ export function BillForm({ temaId, people }: { temaId: string; people: BillPerso
         <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted">€</span>
       </div>
       <label className="flex items-center gap-1.5 text-xs font-semibold text-muted">
-        <input type="checkbox" name={`pagado:${p.usuario}`} defaultChecked={p.pagado} className="size-5 accent-oliva" />
+        <input type="checkbox" name={`pagado:${p.usuario}`} defaultChecked={p.pagado} className="size-5 accent-cobalt" />
         Pagado
       </label>
     </li>
@@ -93,7 +93,7 @@ export function BillForm({ temaId, people }: { temaId: string; people: BillPerso
 
       {others.length > 0 ? (
         <details className="rounded-card border border-line bg-white px-4 py-3">
-          <summary className="cursor-pointer text-sm font-bold text-terra-700">Añadir a alguien más ({others.length})</summary>
+          <summary className="cursor-pointer text-sm font-bold text-mandarin-700">Añadir a alguien más ({others.length})</summary>
           <ul className="mt-2 divide-y divide-line">{others.map(row)}</ul>
         </details>
       ) : null}

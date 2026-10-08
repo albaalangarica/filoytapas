@@ -29,8 +29,8 @@ export function AddReflection({ temaId, compact = false }: { temaId: string; com
           onClick={() => setOpen(true)}
           className={
             compact
-              ? 'inline-flex items-center gap-1.5 self-start text-sm font-bold text-terra-700 hover:underline'
-              : 'flex items-center justify-center gap-2 rounded-full border-2 border-dashed border-terra/50 px-4 py-3.5 font-bold text-terra-700 hover:bg-terra-50'
+              ? 'inline-flex items-center gap-1.5 self-start text-sm font-bold text-mandarin-700 hover:underline'
+              : 'flex items-center justify-center gap-2 rounded-full border-2 border-dashed border-mandarin/50 px-4 py-3.5 font-bold text-mandarin-700 hover:bg-mandarin-50'
           }
         >
           <Icon name="plus" className="size-4" /> Añadir mi aportación

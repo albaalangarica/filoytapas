@@ -22,25 +22,25 @@ export function SessionToday({
   const { topic, going, notGoing, myAnswer } = summary
   const paragraphs = topic.introduccion.split(/\n\s*\n/).filter(Boolean)
   return (
-    <article className="flex flex-col gap-6 pt-6">
-      <header className="relative">
-        <Jarra className="pointer-events-none absolute -right-3 -top-2 size-28 text-terra/10" />
-        <p className="text-xs font-bold uppercase tracking-[0.16em] text-terra-700">
+    <article className="flex flex-col gap-6">
+      <header className="relative -mx-4 overflow-hidden bg-gradient-to-b from-cobalt-50 to-paper px-5 pb-2 pt-6 sm:mx-0 sm:rounded-[1.75rem] sm:pb-6">
+        <Jarra className="pointer-events-none absolute -right-6 -top-3 size-40 text-cobalt/10" />
+        <p className="relative inline-flex rounded-full bg-mandarin px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-white">
           {relativeLabel(topic.fecha, today)} · {longDate(topic.fecha)}
         </p>
-        <h1 className="relative mt-2 text-[2.15rem] font-semibold leading-[1.05] tracking-tight text-cacao">{topic.titulo}</h1>
-        {topic.cita ? <p className="mt-3 font-display text-xl italic text-oliva-700">«{topic.cita}»</p> : null}
-        <div className="mt-4 flex flex-wrap gap-2 text-sm font-semibold">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-mist px-3 py-1.5">
-            <Icon name="clock" className="size-4 text-terra" /> {topic.hora}
+        <h1 className="relative mt-3 text-[2.15rem] font-extrabold leading-[1.02] tracking-tight text-navy">{topic.titulo}</h1>
+        {topic.cita ? <p className="relative mt-3 text-xl italic text-cobalt-700">«{topic.cita}»</p> : null}
+        <div className="relative mt-4 flex flex-wrap gap-2 text-sm font-semibold">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 shadow-[0_1px_0_var(--color-line)]">
+            <Icon name="clock" className="size-4 text-cobalt" /> {topic.hora}
           </span>
           {mapsUrl ? (
-            <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-full bg-mist px-3 py-1.5 hover:bg-terra-50">
-              <Icon name="pin" className="size-4 text-terra" /> {topic.lugar}
+            <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 shadow-[0_1px_0_var(--color-line)] hover:text-cobalt">
+              <Icon name="pin" className="size-4 text-cobalt" /> {topic.lugar}
             </a>
           ) : (
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-mist px-3 py-1.5">
-              <Icon name="pin" className="size-4 text-terra" /> {topic.lugar}
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 shadow-[0_1px_0_var(--color-line)]">
+              <Icon name="pin" className="size-4 text-cobalt" /> {topic.lugar}
             </span>
           )}
         </div>
@@ -58,7 +58,7 @@ export function SessionToday({
 
       {topic.preguntas.length > 0 ? (
         <section>
-          <h2 className="mb-3 font-display text-xl font-semibold text-cacao">Para charlar</h2>
+          <h2 className="mb-3 font-display text-xl font-extrabold text-navy">Para charlar</h2>
           <Questions questions={topic.preguntas} />
         </section>
       ) : null}
@@ -68,21 +68,21 @@ export function SessionToday({
           href={podcastUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-4 rounded-card border border-line bg-white p-4 transition hover:border-terra"
+          className="flex items-center gap-4 rounded-card border border-line bg-white p-4 transition hover:border-cobalt"
         >
-          <span className="grid size-12 shrink-0 place-items-center rounded-full bg-terra-50 text-2xl" aria-hidden="true">
+          <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-cobalt-50 text-2xl" aria-hidden="true">
             🎧
           </span>
           <span className="flex-1">
-            <span className="block font-display text-lg font-semibold text-cacao">Escucha el podcast</span>
+            <span className="block font-display text-lg font-extrabold text-navy">Escucha el podcast</span>
             <span className="text-sm text-muted">Y los materiales de la sesión</span>
           </span>
-          <Icon name="external" className="size-5 text-terra" />
+          <Icon name="external" className="size-5 text-cobalt" />
         </a>
       ) : null}
 
-      <section className="rounded-card bg-mist p-5">
-        <p className="mb-4 font-display text-xl font-semibold text-cacao">{topic.llamada || '¿Contamos contigo?'}</p>
+      <section className="rounded-card border border-cobalt-100 bg-cobalt-50 p-5">
+        <p className="mb-4 font-display text-xl font-extrabold text-navy">{topic.llamada || '¿Contamos contigo?'}</p>
         <RsvpButtons temaId={topic.id} myAnswer={myAnswer} />
         <Link
           href={`/sesiones/${encodeURIComponent(topic.id)}?tab=asistentes`}

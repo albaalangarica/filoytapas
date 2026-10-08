@@ -1,33 +1,32 @@
 @import 'tailwindcss';
 
 /*
- * Filo y Tapas · estilo mediterráneo: paredes encaladas, barro cocido, olivo y el marrón
- * del logo original. Azulejo como único adorno. Nada de negros.
+ * Filo y Tapas · azul cobalto y naranja mandarina sobre blanco, en versión suave:
+ * tintes claros de azul en lugar de bloques intensos. Nada de negros.
  */
 @theme {
   --font-sans: 'Figtree Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-display: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
+  --font-display: 'Bricolage Grotesque Variable', 'Figtree Variable', ui-sans-serif, system-ui, sans-serif;
 
-  --color-paper: #fdf9f1;
-  --color-white: #fffdf8;
-  --color-mist: #f5ecdd;
-  --color-ink: #3b2a1d;
-  --color-muted: #7b6a58;
-  --color-line: #e8dcc6;
-  --color-cacao: #7e5539;
-  --color-terra: #c0552e;
-  --color-terra-700: #963f1e;
-  --color-terra-50: #fbe8dc;
-  --color-oliva: #5f6d2e;
-  --color-oliva-700: #47521f;
-  --color-oliva-50: #edf0dc;
-  --color-oliva-100: #dfe5c4;
-  --color-mar: #2c5f86;
-  --color-limon: #e9b949;
-  --color-ok: #4f7a2b;
-  --color-ok-50: #eaf2dc;
-  --color-danger: #b23a2a;
-  --color-danger-50: #fbe6e1;
+  --color-paper: #fbfcff;
+  --color-white: #ffffff;
+  --color-mist: #f1f4fd;
+  --color-ink: #16204a;
+  --color-muted: #5d6688;
+  --color-line: #e1e6f5;
+  --color-navy: #1b2f86;
+  --color-cobalt: #1e47e0;
+  --color-cobalt-700: #1736b8;
+  --color-cobalt-50: #ebf0fe;
+  --color-cobalt-100: #d6e0fc;
+  --color-sky: #4f8ef7;
+  --color-mandarin: #ff7a1a;
+  --color-mandarin-700: #c45200;
+  --color-mandarin-50: #fff2e8;
+  --color-ok: #11845b;
+  --color-ok-50: #e3f5ec;
+  --color-danger: #c22a3a;
+  --color-danger-50: #fdecee;
 
   --radius-card: 1.25rem;
 
@@ -58,26 +57,16 @@
   }
   h1, h2, h3 {
     font-family: var(--font-display);
-    font-optical-sizing: auto;
     text-wrap: balance;
   }
   :focus-visible {
-    outline: 3px solid var(--color-terra);
+    outline: 3px solid var(--color-mandarin);
     outline-offset: 2px;
     border-radius: 0.5rem;
   }
   ::selection {
-    background: var(--color-terra);
+    background: var(--color-mandarin);
     color: var(--color-white);
-  }
-}
-
-@layer components {
-  /* Cenefa de azulejo: flor de cuatro pétalos en añil y barro sobre cal. */
-  .azulejo {
-    background-color: var(--color-white);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill='none' stroke='%232c5f86' stroke-width='1.6'%3E%3Cpath d='M20 4c5 6 5 10 0 16-5-6-5-10 0-16zM20 36c5-6 5-10 0-16-5 6-5 10 0 16zM4 20c6-5 10-5 16 0-6 5-10 5-16 0zM36 20c-6-5-10-5-16 0 6 5 10 5 16 0z'/%3E%3Cpath d='M0 0h40v40H0z' stroke='%23e8dcc6'/%3E%3C/g%3E%3Ccircle cx='20' cy='20' r='2.6' fill='%23c0552e'/%3E%3Cg fill='%23c0552e'%3E%3Ccircle cx='0' cy='0' r='3'/%3E%3Ccircle cx='40' cy='0' r='3'/%3E%3Ccircle cx='0' cy='40' r='3'/%3E%3Ccircle cx='40' cy='40' r='3'/%3E%3C/g%3E%3C/svg%3E");
-    background-size: 40px 40px;
   }
 }
 

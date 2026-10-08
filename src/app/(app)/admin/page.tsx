@@ -46,11 +46,11 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
                 href={`?tab=${t.id}`}
                 replace
                 aria-current={tab === t.id ? 'page' : undefined}
-                className={cn('inline-flex items-center gap-1.5 border-b-[3px] px-3 py-3 text-sm font-bold', tab === t.id ? 'border-terra' : 'border-transparent text-muted')}
+                className={cn('inline-flex items-center gap-1.5 border-b-[3px] px-3 py-3 text-sm font-bold', tab === t.id ? 'border-mandarin' : 'border-transparent text-muted')}
               >
                 {t.label}
                 {t.id === 'solicitudes' && pending.length > 0 ? (
-                  <span className="rounded-full bg-terra px-1.5 text-xs text-white">{pending.length}</span>
+                  <span className="rounded-full bg-mandarin px-1.5 text-xs text-white">{pending.length}</span>
                 ) : null}
               </Link>
             </li>
@@ -104,14 +104,14 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
               const { day, month } = dayAndMonth(t.fecha)
               return (
                 <li key={t.id} className="flex items-center gap-3 rounded-2xl border border-line p-3">
-                  <span className="w-12 text-center font-display text-sm font-semibold text-terra-700">
+                  <span className="w-12 text-center font-display text-sm font-extrabold text-mandarin-700">
                     {day} {month}
                   </span>
-                  <Link href={`/sesiones/${encodeURIComponent(t.id)}`} className="min-w-0 flex-1 truncate font-semibold hover:text-oliva">
+                  <Link href={`/sesiones/${encodeURIComponent(t.id)}`} className="min-w-0 flex-1 truncate font-semibold hover:text-cobalt">
                     {t.titulo}
                   </Link>
-                  {!t.publicado ? <span className="rounded-full bg-oliva-50 px-2 py-0.5 text-xs font-bold text-oliva">Borrador</span> : null}
-                  <Link href={`/admin/temas/${encodeURIComponent(t.id)}/editar`} aria-label={`Editar ${t.titulo}`} className="rounded-xl p-2 text-oliva hover:bg-oliva-50">
+                  {!t.publicado ? <span className="rounded-full bg-cobalt-50 px-2 py-0.5 text-xs font-bold text-cobalt">Borrador</span> : null}
+                  <Link href={`/admin/temas/${encodeURIComponent(t.id)}/editar`} aria-label={`Editar ${t.titulo}`} className="rounded-xl p-2 text-cobalt hover:bg-cobalt-50">
                     <Icon name="edit" />
                   </Link>
                 </li>
@@ -146,7 +146,7 @@ function MemberRow({ user, isMe }: { user: User; isMe: boolean }) {
             <form action={setRole}>
               <input type="hidden" name="usuario" value={user.usuario} />
               <input type="hidden" name="rol" value={user.rol === 'admin' ? 'miembro' : 'admin'} />
-              <button type="submit" className="font-semibold text-oliva">
+              <button type="submit" className="font-semibold text-cobalt">
                 {user.rol === 'admin' ? 'Quitar admin' : 'Hacer admin'}
               </button>
             </form>
@@ -184,9 +184,9 @@ function PendingSummary({ data }: { data: Awaited<ReturnType<typeof getAppData>>
   }
   return (
     <div className="flex flex-col gap-3">
-      <div className="rounded-card border border-terra/30 bg-terra-50 p-4">
+      <div className="rounded-card border border-mandarin/30 bg-mandarin-50 p-4">
         <p className="text-sm font-semibold text-muted">Pendiente de cobrar</p>
-        <p className="font-display text-3xl font-semibold tabular-nums text-cacao">{formatEuros(total)}</p>
+        <p className="font-display text-3xl font-extrabold tabular-nums text-navy">{formatEuros(total)}</p>
       </div>
       <ul className="flex flex-col gap-2">
         {people.map(([usuario, v]) => (
@@ -194,12 +194,12 @@ function PendingSummary({ data }: { data: Awaited<ReturnType<typeof getAppData>>
             <div className="flex items-center gap-3">
               <Avatar usuario={usuario} nombre={names.get(usuario) ?? usuario} size="sm" />
               <span className="flex-1 font-bold">{names.get(usuario) ?? usuario}</span>
-              <span className="font-display text-lg font-semibold tabular-nums text-terra-700">{formatEuros(v.total)}</span>
+              <span className="font-display text-lg font-extrabold tabular-nums text-mandarin-700">{formatEuros(v.total)}</span>
             </div>
             <ul className="mt-2 flex flex-col gap-1 pl-10 text-sm text-muted">
               {v.items.map((i) => (
                 <li key={i.temaId} className="flex justify-between gap-3">
-                  <Link href={`/sesiones/${encodeURIComponent(i.temaId)}?tab=cuentas`} className="truncate hover:text-terra-700">
+                  <Link href={`/sesiones/${encodeURIComponent(i.temaId)}?tab=cuentas`} className="truncate hover:text-mandarin-700">
                     {titles.get(i.temaId) ?? i.temaId}
                   </Link>
                   <span className="tabular-nums">{formatEuros(i.importe)}</span>

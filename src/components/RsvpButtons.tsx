@@ -17,10 +17,10 @@ export function RsvpButtons({ temaId, myAnswer }: { temaId: string; myAnswer: An
         className={cn(
           base,
           myAnswer === 'voy'
-            ? 'animate-pop bg-terra text-white ring-4 ring-terra/25'
+            ? 'animate-pop bg-mandarin text-white ring-4 ring-mandarin/25'
             : myAnswer === 'no'
-              ? 'border border-terra/40 bg-white text-terra-700'
-              : 'bg-terra text-white shadow-[0_4px_0_0_var(--color-terra-700)]',
+              ? 'border border-mandarin/40 bg-white text-mandarin-700'
+              : 'bg-mandarin text-white shadow-[0_4px_0_0_var(--color-mandarin-700)]',
         )}
       >
         {myAnswer === 'voy' ? '¡Voy! 🔥' : 'Voy 🔥'}
@@ -32,7 +32,7 @@ export function RsvpButtons({ temaId, myAnswer }: { temaId: string; myAnswer: An
         variant="bare"
         className={cn(
           base,
-          myAnswer === 'no' ? 'bg-oliva text-white ring-4 ring-oliva/25' : 'border border-oliva/30 bg-oliva-50 text-oliva-700',
+          myAnswer === 'no' ? 'bg-cobalt text-white ring-4 ring-cobalt/25' : 'border border-cobalt/30 bg-cobalt-50 text-cobalt-700',
         )}
       >
         No puedo 💔

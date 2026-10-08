@@ -31,10 +31,10 @@ export default async function ContributionsPage() {
             const { reflections } = summarize(data, topic, me.usuario)
             return (
               <section key={topic.id} aria-labelledby={`t-${topic.id}`} className="flex flex-col gap-3">
-                <header className="border-b-2 border-dotted border-terra/30 pb-2">
-                  <p className="text-xs font-bold uppercase tracking-[0.14em] text-terra-700">{longDate(topic.fecha)}</p>
-                  <h2 id={`t-${topic.id}`} className="font-display text-2xl font-semibold leading-tight text-cacao">
-                    <Link href={`/sesiones/${encodeURIComponent(topic.id)}`} className="hover:text-terra-700">
+                <header className="border-b-2 border-dotted border-mandarin/30 pb-2">
+                  <p className="text-xs font-bold uppercase tracking-[0.14em] text-mandarin-700">{longDate(topic.fecha)}</p>
+                  <h2 id={`t-${topic.id}`} className="font-display text-2xl font-extrabold leading-tight text-navy">
+                    <Link href={`/sesiones/${encodeURIComponent(topic.id)}`} className="hover:text-mandarin-700">
                       {topic.titulo}
                     </Link>
                   </h2>

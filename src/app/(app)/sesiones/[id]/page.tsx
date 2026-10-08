@@ -57,7 +57,7 @@ export default async function SessionPage({ params, searchParams }: Props) {
 
   return (
     <article className="pt-5">
-      <Link href="/sesiones" className="mb-4 inline-flex items-center gap-1 text-sm font-semibold text-terra-700">
+      <Link href="/sesiones" className="mb-4 inline-flex items-center gap-1 text-sm font-semibold text-mandarin-700">
         <Icon name="back" className="size-4" /> Sesiones
       </Link>
 
@@ -66,15 +66,15 @@ export default async function SessionPage({ params, searchParams }: Props) {
           {topic.fecha >= today ? `${relativeLabel(topic.fecha, today)} · ` : ''}
           {longDate(topic.fecha)} · {topic.hora} · {topic.lugar}
         </Eyebrow>
-        <h1 className="mt-2 text-[2rem] font-semibold leading-[1.06] tracking-tight text-cacao">{topic.titulo}</h1>
-        {topic.cita ? <p className="mt-3 font-display text-lg italic text-oliva-700">«{topic.cita}»</p> : null}
+        <h1 className="mt-2 text-[2rem] font-extrabold leading-[1.06] tracking-tight text-navy">{topic.titulo}</h1>
+        {topic.cita ? <p className="mt-3 text-lg italic text-cobalt-700">«{topic.cita}»</p> : null}
         <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-muted">
           {topic.autor ? <span>Por {topic.autor}</span> : null}
-          {!topic.publicado ? <span className="rounded-full bg-oliva-50 px-2.5 py-0.5 font-bold text-oliva-700">Borrador: solo lo ven los admins</span> : null}
+          {!topic.publicado ? <span className="rounded-full bg-cobalt-50 px-2.5 py-0.5 font-bold text-cobalt-700">Borrador: solo lo ven los admins</span> : null}
         </div>
       </header>
 
-      <nav aria-label="Secciones" className="sticky top-[calc(4.75rem+env(safe-area-inset-top))] z-10 -mx-4 mt-5 border-b border-line bg-paper/95 px-4 backdrop-blur">
+      <nav aria-label="Secciones" className="sticky top-[calc(3.5rem+1px+env(safe-area-inset-top))] z-10 -mx-4 mt-5 border-b border-line bg-paper/95 px-4 backdrop-blur">
         <ul className="-mb-px flex overflow-x-auto [scrollbar-width:none]">
           {TABS.map((t) => (
             <li key={t.id}>
@@ -85,12 +85,12 @@ export default async function SessionPage({ params, searchParams }: Props) {
                 aria-current={tab === t.id ? 'page' : undefined}
                 className={cn(
                   'inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap border-b-[3px] px-2.5 py-3 text-sm font-bold',
-                  tab === t.id ? 'border-terra text-ink' : 'border-transparent text-muted',
+                  tab === t.id ? 'border-mandarin text-ink' : 'border-transparent text-muted',
                 )}
               >
                 {t.label}
                 {counts[t.id] !== null ? (
-                  <span className={cn('rounded-full px-1.5 text-xs', tab === t.id ? 'bg-terra-50 text-terra-700' : 'bg-mist')}>{counts[t.id]}</span>
+                  <span className={cn('rounded-full px-1.5 text-xs', tab === t.id ? 'bg-mandarin-50 text-mandarin-700' : 'bg-mist')}>{counts[t.id]}</span>
                 ) : null}
               </Link>
             </li>
@@ -113,13 +113,13 @@ export default async function SessionPage({ params, searchParams }: Props) {
             ) : null}
             {topic.preguntas.length > 0 ? (
               <section>
-                <h2 className="mb-3 font-display text-xl font-semibold text-cacao">Para charlar</h2>
+                <h2 className="mb-3 font-display text-xl font-extrabold text-navy">Para charlar</h2>
                 <Questions questions={topic.preguntas} />
               </section>
             ) : null}
             {isOpenForRsvp(topic, today) ? (
               <div className="rounded-card bg-mist p-5">
-                <p className="mb-4 font-display text-xl font-semibold text-cacao">{topic.llamada || '¿Contamos contigo?'}</p>
+                <p className="mb-4 font-display text-xl font-extrabold text-navy">{topic.llamada || '¿Contamos contigo?'}</p>
                 <RsvpButtons temaId={topic.id} myAnswer={summary.myAnswer} />
               </div>
             ) : null}

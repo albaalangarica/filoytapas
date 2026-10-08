@@ -1,6 +1,6 @@
 import { cn } from './ui'
 
-const COLORS = ['bg-oliva', 'bg-terra', 'bg-mar', 'bg-cacao', 'bg-[#a8763e]', 'bg-[#6f8f7a]', 'bg-[#b5654a]']
+const COLORS = ['bg-cobalt', 'bg-mandarin', 'bg-sky', 'bg-navy', 'bg-[#a8763e]', 'bg-[#6f8f7a]', 'bg-[#b5654a]']
 
 function colorFor(usuario: string): string {
   let h = 0

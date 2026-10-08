@@ -84,7 +84,7 @@ npm run check      # lint + tipos + tests + build
 
 ## Stack
 
-Next.js 16 (App Router, Server Actions) · React 19 · TypeScript estricto · Tailwind CSS 4 · zod · Vitest. Sin dependencias de UI ni de Google: la API de Sheets se llama con `fetch` y una firma JWT de Node. Estilo mediterráneo (cal, terracota, oliva, azulejo). Tipografías Fraunces y Figtree servidas localmente.
+Next.js 16 (App Router, Server Actions) · React 19 · TypeScript estricto · Tailwind CSS 4 · zod · Vitest. Sin dependencias de UI ni de Google: la API de Sheets se llama con `fetch` y una firma JWT de Node. Azul cobalto y naranja mandarina sobre blanco. Tipografías Bricolage Grotesque y Figtree servidas localmente.
 
 ```
 src/

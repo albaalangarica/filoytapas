@@ -37,7 +37,7 @@ export default async function ProfilePage() {
       <header className="flex items-center gap-4 pb-2 pt-6">
         <Avatar usuario={me.usuario} nombre={me.nombre} size="lg" />
         <div>
-          <h1 className="text-2xl font-semibold text-cacao">{me.nombre}</h1>
+          <h1 className="text-2xl font-extrabold text-navy">{me.nombre}</h1>
           <p className="text-sm text-muted">
             @{me.usuario}
             {me.rol === 'admin' ? ' · Admin' : ''}
@@ -46,22 +46,22 @@ export default async function ProfilePage() {
       </header>
 
       <dl className="mt-4 grid grid-cols-2 gap-3">
-        <div className="rounded-card bg-terra-50 p-4">
-          <dt className="text-xs font-bold uppercase tracking-[0.12em] text-terra-700">Sesiones en la mesa</dt>
-          <dd className="font-display text-3xl font-semibold tabular-nums">{attended}</dd>
+        <div className="rounded-card bg-mandarin-50 p-4">
+          <dt className="text-xs font-bold uppercase tracking-[0.12em] text-mandarin-700">Sesiones en la mesa</dt>
+          <dd className="font-display text-3xl font-extrabold tabular-nums">{attended}</dd>
         </div>
-        <div className="rounded-card bg-oliva-50 p-4">
-          <dt className="text-xs font-bold uppercase tracking-[0.12em] text-oliva">Aportaciones</dt>
-          <dd className="font-display text-3xl font-semibold tabular-nums">{myReflections.length}</dd>
+        <div className="rounded-card bg-cobalt-50 p-4">
+          <dt className="text-xs font-bold uppercase tracking-[0.12em] text-cobalt">Aportaciones</dt>
+          <dd className="font-display text-3xl font-extrabold tabular-nums">{myReflections.length}</dd>
         </div>
       </dl>
 
       {myDebts.length > 0 ? (
         <>
           <SectionTitle>Mis cuentas</SectionTitle>
-          <div className={`mb-3 rounded-card border p-4 ${pending > 0 ? 'border-terra/30 bg-terra-50' : 'border-ok/30 bg-ok-50'}`}>
+          <div className={`mb-3 rounded-card border p-4 ${pending > 0 ? 'border-mandarin/30 bg-mandarin-50' : 'border-ok/30 bg-ok-50'}`}>
             <p className="text-sm font-semibold text-muted">{pending > 0 ? 'Te falta por pagar' : 'Lo tienes todo pagado'}</p>
-            <p className="font-display text-3xl font-semibold tabular-nums text-cacao">{formatEuros(pending)}</p>
+            <p className="font-display text-3xl font-extrabold tabular-nums text-navy">{formatEuros(pending)}</p>
           </div>
           <ul className="divide-y divide-line rounded-card border border-line bg-white px-4">
             {myDebts.map((d) => {
@@ -71,7 +71,7 @@ export default async function ProfilePage() {
                   <Link href={`/sesiones/${encodeURIComponent(d.temaId)}`} className="flex items-center gap-3 py-3">
                     <span className="min-w-0 flex-1 truncate font-semibold">{t.titulo}</span>
                     <span className="tabular-nums">{formatEuros(d.importe)}</span>
-                    <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${d.pagado ? 'bg-ok-50 text-ok' : 'bg-terra-50 text-terra-700'}`}>
+                    <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${d.pagado ? 'bg-ok-50 text-ok' : 'bg-mandarin-50 text-mandarin-700'}`}>
                       {d.pagado ? 'Pagado' : 'Pendiente'}
                     </span>
                   </Link>
@@ -89,12 +89,12 @@ export default async function ProfilePage() {
             const { day, month } = dayAndMonth(t.fecha)
             return (
               <li key={t.id}>
-                <Link href={`/sesiones/${encodeURIComponent(t.id)}`} className="flex items-center gap-3 rounded-2xl border border-line p-3 hover:border-oliva">
-                  <span className="w-12 text-center font-display text-sm font-semibold text-terra-700">
+                <Link href={`/sesiones/${encodeURIComponent(t.id)}`} className="flex items-center gap-3 rounded-2xl border border-line p-3 hover:border-cobalt">
+                  <span className="w-12 text-center font-display text-sm font-extrabold text-mandarin-700">
                     {day} {month}
                   </span>
                   <span className="min-w-0 flex-1 truncate font-semibold">{t.titulo}</span>
-                  {t.fecha >= today ? <span className="rounded-full bg-terra-50 px-2 py-0.5 text-xs font-bold text-terra-700">Voy 🔥</span> : null}
+                  {t.fecha >= today ? <span className="rounded-full bg-mandarin-50 px-2 py-0.5 text-xs font-bold text-mandarin-700">Voy 🔥</span> : null}
                 </Link>
               </li>
             )
@@ -110,7 +110,7 @@ export default async function ProfilePage() {
           <ul className="flex flex-col gap-2">
             {myReflections.map((r) => (
               <li key={r.id}>
-                <Link href={`/sesiones/${encodeURIComponent(r.temaId)}?tab=aportaciones`} className="block rounded-2xl border border-line p-3 hover:border-oliva">
+                <Link href={`/sesiones/${encodeURIComponent(r.temaId)}?tab=aportaciones`} className="block rounded-2xl border border-line p-3 hover:border-cobalt">
                   <span className="line-clamp-2 block">{r.texto}</span>
                   <span className="text-xs text-muted">{topicsById.get(r.temaId)?.titulo ?? ''}</span>
                 </Link>
