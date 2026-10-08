@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { longDate, relativeLabel } from '@/lib/domain/dates'
 import type { TopicSummary } from '@/lib/view'
+import { AddToCalendar } from './AddToCalendar'
 import { AvatarStack } from './Avatar'
 import { Icon } from './Icon'
 import { Jarra } from './Logo'
@@ -13,11 +14,13 @@ export function SessionToday({
   today,
   mapsUrl,
   podcastUrl,
+  origin,
 }: {
   summary: TopicSummary
   today: string
   mapsUrl: string
   podcastUrl: string
+  origin: string
 }) {
   const { topic, going, notGoing, myAnswer } = summary
   const paragraphs = topic.introduccion.split(/\n\s*\n/).filter(Boolean)
@@ -84,6 +87,7 @@ export function SessionToday({
       <section className="rounded-card border border-cobalt-100 bg-cobalt-50 p-5">
         <p className="mb-4 font-display text-xl font-extrabold text-navy">{topic.llamada || '¿Contamos contigo?'}</p>
         <RsvpButtons temaId={topic.id} myAnswer={myAnswer} />
+        <AddToCalendar topic={topic} origin={origin} />
         <Link
           href={`/sesiones/${encodeURIComponent(topic.id)}?tab=asistentes`}
           className="mt-4 flex items-center gap-3 text-sm font-semibold text-muted hover:text-ink"

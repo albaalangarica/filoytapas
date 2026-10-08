@@ -5,6 +5,7 @@ import { requireUser } from '@/lib/auth/session'
 import { getAppData } from '@/lib/data'
 import { todayInMadrid } from '@/lib/domain/dates'
 import { upcomingTopic } from '@/lib/domain/model'
+import { appOrigin } from '@/lib/origin'
 import { summarize } from '@/lib/view'
 
 export default async function HomePage() {
@@ -38,6 +39,7 @@ export default async function HomePage() {
       today={today}
       mapsUrl={data.config.mapsUrl}
       podcastUrl={next.materialesUrl || data.config.driveUrl}
+      origin={await appOrigin()}
     />
   )
 }

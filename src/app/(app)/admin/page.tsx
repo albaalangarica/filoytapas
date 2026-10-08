@@ -10,12 +10,11 @@ import { getAppData } from '@/lib/data'
 import { dayAndMonth, todayInMadrid } from '@/lib/domain/dates'
 import type { User } from '@/lib/domain/model'
 import { formatEuros } from '@/lib/domain/money'
-import { DriveUrlForm, ResetPasswordButton } from './AdminForms'
+import { ResetPasswordButton } from './AdminForms'
 
 export const metadata: Metadata = { title: 'Admin' }
 
 const TABS = [
-  { id: 'solicitudes', label: 'Solicitudes' },
   { id: 'miembros', label: 'Miembros' },
   { id: 'temas', label: 'Sesiones' },
   { id: 'propuestas', label: 'Propuestas' },
@@ -30,7 +29,8 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   const sessionsHeld = data.topics.filter((t) => t.publicado && t.fecha <= todayInMadrid()).length
   const newProposals = data.proposals.filter((p) => p.estado === 'nueva').length
   const owed = data.debts.filter((d) => !d.pagado).reduce((acc, d) => acc + d.importe, 0)
-  const tab = TABS.find((t) => t.id === tabParam)?.id ?? (pending.length > 0 ? 'solicitudes' : 'temas')
+  // «solicitudes» era una pestaña aparte: ahora van dentro de Miembros.
+  const tab = TABS.find((t) => t.id === (tabParam === 'solicitudes' ? 'miembros' : tabParam))?.id ?? (pending.length > 0 ? 'miembros' : 'temas')
   const members = data.users
     .filter((u) => u.estado === 'activo' || u.estado === 'baja')
     .sort((a, b) => (a.estado === b.estado ? a.nombre.localeCompare(b.nombre, 'es') : a.estado === 'activo' ? -1 : 1))
@@ -65,7 +65,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
                 className={cn('inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap border-b-[3px] px-2.5 py-3 text-sm font-bold', tab === t.id ? 'border-mandarin' : 'border-transparent text-muted')}
               >
                 {t.label}
-                {t.id === 'solicitudes' && pending.length > 0 ? (
+                {t.id === 'miembros' && pending.length > 0 ? (
                   <span className="rounded-full bg-mandarin px-1.5 text-xs text-white">{pending.length}</span>
                 ) : null}
                 {t.id === 'propuestas' && newProposals > 0 ? (
@@ -78,13 +78,12 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
       </nav>
 
       <div className="pt-5">
-        {tab === 'solicitudes' ? (
-          pending.length === 0 ? (
-            <Empty title="No hay solicitudes pendientes">Cuando alguien pida acceso, aparecerá aquí.</Empty>
-          ) : (
+        {tab === 'miembros' && pending.length > 0 ? (
+          <section className="mb-8">
+            <h2 className="mb-3 text-xs font-bold uppercase tracking-[0.14em] text-mandarin-700">Solicitudes de acceso · {pending.length}</h2>
             <ul className="flex flex-col gap-3">
               {pending.map((u) => (
-                <li key={u.usuario} className="rounded-card border border-line p-4">
+                <li key={u.usuario} className="rounded-card border-2 border-mandarin/40 bg-white p-4">
                   <div className="flex items-center gap-3">
                     <Avatar usuario={u.usuario} nombre={u.nombre} />
                     <div className="min-w-0 flex-1">
@@ -104,11 +103,12 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
                 </li>
               ))}
             </ul>
-          )
+          </section>
         ) : null}
 
         {tab === 'miembros' ? (
           <ul className="flex flex-col gap-3">
+            {pending.length > 0 ? <li className="text-xs font-bold uppercase tracking-[0.14em] text-muted">Miembros</li> : null}
             {members.map((u) => (
               <MemberRow key={u.usuario} user={u} isMe={u.usuario === me.usuario} />
             ))}
@@ -141,12 +141,6 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
           </ul>
         ) : null}
       </div>
-
-      <section className="mt-12 rounded-card border border-line bg-white p-5">
-        <h2 className="mb-1 flex items-center gap-2 font-display text-xl font-extrabold text-navy">🎧 Drive del podcast</h2>
-        <p className="mb-4 text-sm text-muted">La carpeta donde se suben el podcast y los materiales.</p>
-        <DriveUrlForm current={data.config.driveUrl} />
-      </section>
     </>
   )
 }

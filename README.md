@@ -9,13 +9,13 @@ Todos los datos viven en un **Google Sheet** de tu Drive. La app se publica en *
 | Pantalla | Qué permite |
 |---|---|
 | **Entrar / Solicitar acceso** | Usuario y contraseña. Quien no tiene cuenta la solicita y un admin la aprueba. |
-| **Inicio** | La sesión de hoy (o la próxima) entera: título, cita, hora, bar, texto, todas las preguntas y el enlace al podcast. Debajo, Voy 🔥 / No puedo 💔 y quién va. |
+| **Inicio** | La sesión de hoy (o la próxima) entera: título, cita, hora, bar, texto, todas las preguntas y el enlace al podcast. Debajo, Voy 🔥 / No puedo 💔, «Añadir al calendario» (Apple/iPhone con .ics o Google Calendar) y quién va. |
 | **Sesiones** | Las sesiones anteriores, una tarjeta por sesión. Cada ficha tiene *Tema*, *Asistentes* y *Aportaciones*. Botón para compartir en WhatsApp. |
 | **Aportaciones** | Lo que dice cada uno, agrupado por tema. Se pueden escribir desde que empieza la sesión (día y hora) y las ve todo el grupo. Texto y, si se quiere, un enlace. |
 | **Perfil** | Sesiones a las que has ido y lo que debes, bloque «Propón un tema» con tus propuestas, tus cuentas, sesiones y aportaciones, instalar la app, cambiar contraseña, salir. Los admins no tienen esta pestaña (tienen Admin); su perfil está en el avatar de arriba. |
 | **Propuestas** | Los miembros proponen temas (en Perfil y al final de Sesiones). Los admins los ven en *Admin → Propuestas* y con «Crear sesión con este tema» se rellena el formulario; la propuesta no cambia al publicar. Se pueden archivar. |
 | **Cuentas** | Tipo Tricount. En cada sesión, los admins meten cuánto debe cada persona (con «Repartir a partes iguales» entre los que fueron) y marcan quién ha pagado. Cada persona ve solo lo suyo, en la sesión y en su perfil. El panel de admin resume lo pendiente por persona. |
-| **Admin** | Publicar y editar sesiones (también como borrador), aprobar o rechazar solicitudes, hacer o quitar admin, resetear contraseñas y dar de baja. |
+| **Admin** | Publicar y editar sesiones (también como borrador), aprobar o rechazar solicitudes (dentro de Miembros), hacer o quitar admin, resetear contraseñas y dar de baja. |
 
 El enlace al podcast es el de cada sesión (columna `materiales_url`) o, si no tiene, el general de CONFIG (`drive_url`).
 

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { AddToCalendar } from '@/components/AddToCalendar'
 import { Attendees } from '@/components/Attendees'
 import { BillForm } from '@/components/BillForm'
 import { MyDebt } from '@/components/MyDebt'
@@ -16,6 +17,7 @@ import { getAppData } from '@/lib/data'
 import { longDate, relativeLabel, todayInMadrid } from '@/lib/domain/dates'
 import { isOpenForContributions, isOpenForRsvp } from '@/lib/domain/model'
 import { shareText } from '@/lib/share'
+import { appOrigin } from '@/lib/origin'
 import { summarize } from '@/lib/view'
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ tab?: string }> }
@@ -121,6 +123,7 @@ export default async function SessionPage({ params, searchParams }: Props) {
               <div className="rounded-card bg-mist p-5">
                 <p className="mb-4 font-display text-xl font-extrabold text-navy">{topic.llamada || '¿Contamos contigo?'}</p>
                 <RsvpButtons temaId={topic.id} myAnswer={summary.myAnswer} />
+                <AddToCalendar topic={topic} origin={await appOrigin()} />
               </div>
             ) : null}
             <div className="flex flex-col gap-2">

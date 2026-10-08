@@ -1,7 +1,7 @@
 'use client'
 
 import { useActionState, useState } from 'react'
-import { resetPassword, saveDriveUrl, saveTopic } from '@/lib/actions/admin'
+import { resetPassword, saveTopic } from '@/lib/actions/admin'
 import { initialFormState } from '@/lib/actions/state'
 import { SubmitButton } from '@/components/SubmitButton'
 import { Field, Notice, buttonStyles, inputStyles } from '@/components/ui'
@@ -85,7 +85,7 @@ export function TopicForm({ initial }: { initial: TopicFormValues }) {
       <Field label="Frase para confirmar" htmlFor="t-llamada" hint="Va encima de los botones Voy / No puedo.">
         <input id="t-llamada" name="llamada" maxLength={120} defaultValue={initial.llamada} className={inputStyles} placeholder="¿Contamos contigo?" />
       </Field>
-      <Field label="Enlace al podcast (opcional)" htmlFor="t-materiales" hint="Si lo dejas vacío, se usa el Drive general (abajo del todo en Admin).">
+      <Field label="Enlace al podcast (opcional)" htmlFor="t-materiales" hint="Si lo dejas vacío, se usa el enlace general de CONFIG (drive_url).">
         <input id="t-materiales" name="materiales_url" type="url" defaultValue={initial.materiales_url} className={inputStyles} placeholder="https://drive.google.com/…" />
       </Field>
       <label className="flex items-center gap-3 rounded-2xl bg-mist p-4 font-semibold">
@@ -101,19 +101,3 @@ export function TopicForm({ initial }: { initial: TopicFormValues }) {
   )
 }
 
-/** Enlace general al Drive: es el que se abre con «Escucha el podcast» si la sesión no tiene uno propio. */
-export function DriveUrlForm({ current }: { current: string }) {
-  const [state, action] = useActionState(saveDriveUrl, initialFormState)
-  return (
-    <form action={action} className="flex flex-col gap-3">
-      <Field label="Enlace a la carpeta de Drive" htmlFor="drive-url" hint="Es el enlace de «Escucha el podcast» en Inicio y en cada sesión (salvo que la sesión tenga uno propio).">
-        <input id="drive-url" name="drive_url" type="url" inputMode="url" defaultValue={current} placeholder="https://drive.google.com/drive/folders/…" className={inputStyles} />
-      </Field>
-      {state.error ? <Notice kind="error">{state.error}</Notice> : null}
-      {state.ok ? <Notice kind="ok">{state.ok}</Notice> : null}
-      <SubmitButton variant="secondary" pendingText="Guardando…">
-        Guardar enlace
-      </SubmitButton>
-    </form>
-  )
-}
