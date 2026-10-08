@@ -12,15 +12,17 @@ const ITEMS: { href: string; label: string; icon: IconName }[] = [
   { href: '/perfil', label: 'Perfil', icon: 'user' },
 ]
 
-export function BottomNav() {
+/** Los admins tienen «Admin» en lugar de «Perfil»; su perfil sigue en el avatar de arriba. */
+export function BottomNav({ isAdmin }: { isAdmin: boolean }) {
   const pathname = usePathname()
+  const items = isAdmin ? [...ITEMS.slice(0, 3), { href: '/admin', label: 'Admin', icon: 'shield' as const }] : ITEMS
   return (
     <nav
       aria-label="Principal"
       className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-paper/95 pb-[env(safe-area-inset-bottom)] backdrop-blur"
     >
       <ul className="mx-auto flex max-w-xl">
-        {ITEMS.map((item) => {
+        {items.map((item) => {
           const active = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href)
           return (
             <li key={item.href} className="flex-1">
